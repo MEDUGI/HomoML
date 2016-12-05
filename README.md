@@ -36,14 +36,12 @@ Matrix类
 >* linearSolve: Matrix Matrix.linearSolve(Matrix y): return null when no solutions
 >* leastSquareSolve: Matrix Matrix.leastSquareSolve(Matrix y): return exacts solution when possible, apporx. solution otherwise.
 >* 转置: Matrix matrix.reverse()
->* determininant: double Matrix.determinant() throws Exception
+>* determinant: double Matrix.determinant() throws Exception
 >* 求逆： Matrix Matrix.inverse() throws Exception
 >* SVD: Matrix[] Matrix.SVD() throws Exception. The returned list contains 3 entries, represents U Σ and V'
 >* copy: Matrix Matrix.copy()
 >* subMatrix: Matrix Matrix.subMatrix(int lx, int ly, int rx, int ry) assert(rx > lx; ry > ly) throws Exception
 >* columnUnion: Matrix Matrix.columnUnion(Matrix rhm) throws Exception
->* convolution: Matrix Matrix.convolution(ConvolutionFunction function) throws Exception
->* kernel: Matrix Matrix.kernel(KernelFunction function) throws Exception
 
 MatrixException类 extends Exception
 
