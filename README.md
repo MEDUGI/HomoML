@@ -52,13 +52,46 @@ PCA类
 >* 压缩数据：Matrix PCA.encode(Matirx) throws Exception
 
 ConvolutionFunction接口
->* double convolutionOf(Matrix m)
->* int getXSize()
->* int getYSize()
+>* Matrix convolutionOf(Matrix m)
+
+PoolingFunction接口
+>* Matrix poolingOf(Matrix m)
+
+ConvolutionLayer实现ConvolutionFunction与PoolingFunction
+>* Matrix dataMatrix;
+>* Matrix weightVector;
+>* Matrix outputOf(Matrix inputVector);
+>* getter & setter
+
+FullConnectedLayer类
+>* Matrix weightVector;
+>* getter & setter
 
 KernelFunction接口
 >* double kernelOf(Matrix x1, Matrix x2) throws Exception
  
 DataMatrix接口
 >* Matrix dataMatrix();
+>* Matrix labelMatrix();
 
+ClassificationMethod枚举类：
+>* {KSVM, CNN}
+
+Classifier父类：
+>* protected ClassificationMethod classificationMethod
+>* protected boolean isTrained
+>* protected Map<String, Object> setting;
+>* public boolean trainClassifier(Matrix dataMatrix, Matrix labelMatrix);
+>* public double classify(Matrix dataVector)
+>* getter & setter
+
+SvmClassifier继承Classifier
+>* protected KernelFunction kernelFunction;
+>* protected Matrix supportVectors;
+>* protected Matrix alphaVector;
+>* protected double bias;
+>* protected boolean applySetting();
+>* getter & setter
+
+CnnClassifier继承Classifier
+>* protected ArrayList<ConvolutionLayer> convolutionLayers
