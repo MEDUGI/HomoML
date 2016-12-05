@@ -68,9 +68,10 @@ FullConnectedLayer类
 KernelFunction接口
 >* double kernelOf(Matrix x1, Matrix x2) throws Exception
  
-DataMatrix接口
+DataProvider接口
 >* Matrix dataMatrix();
 >* Matrix labelMatrix();
+>* boolean isReady();
 
 ClassificationMethod枚举类：
 >* {KSVM, CNN}
