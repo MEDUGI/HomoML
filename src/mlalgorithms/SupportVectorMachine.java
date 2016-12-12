@@ -4,10 +4,6 @@ import basicUtils.Matrix;
 import dataInterface.DataProvider;
 
 import java.util.ArrayList;
-
-/**
- * Created by 李沅泽 on 2016/12/12.
- */
 public class SupportVectorMachine {
     /*
      * 一个简单的二分类SVM
