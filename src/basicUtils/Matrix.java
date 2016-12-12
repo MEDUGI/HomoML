@@ -12,6 +12,9 @@ public class Matrix {
     public Matrix(int m, int n, double initial) {
 
     }
+    public double[][] rawData() {
+        return null;
+    }
     public Matrix add(Matrix rhm) {
 
         return null;
