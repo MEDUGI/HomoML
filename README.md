@@ -35,9 +35,9 @@ Matrix类
 //>* 乘法: Matrix Matrix.multiply(Matrix) throws Exception "Matrix A's width doesn't match Matrix B's height."
 //>* 数乘: Matrix Matrix.multiply(double scalar)
 //>* row reduction: Matrix Matrix.reduce()
->* linearSolve: Matrix Matrix.linearSolve(Matrix y): return null when no solutions
+//>* linearSolve: Matrix Matrix.linearSolve(Matrix y): return null when no solutions
 >* leastSquareSolve: Matrix Matrix.leastSquareSolve(Matrix y): return exacts solution when possible, apporx. solution otherwise.
->* 转置: Matrix matrix.reverse()
+//>* 转置: Matrix matrix.reverse()
 >* determinant: double Matrix.determinant() throws Exception
 >* 求逆： Matrix Matrix.inverse() throws Exception
 >* SVD: Matrix[] Matrix.SVD() throws Exception. The returned list contains 3 entries, represents U Σ and V'
