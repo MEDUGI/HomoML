@@ -26,17 +26,19 @@ CNN --> 卷积操作（不同卷积核，同样的，是否能实现基本的扩
   -- zqy
 
 Matrix类
->* 构造函数：double[][] data
->* 构造函数: int m, int n, double initial.
+//>* 构造函数：double[][] data
+//>* 构造函数: int m, int n, double initial.
+//>* 构造函数：int m, int n
+//>* 构造函数：Matrix mat
 >* 加法: Matrix Matrix.add(Matrix)
 >* 减法： Matrix Matrix.sub(Matrix)
->* 乘法: Matrix Matrix.multiply(Matrix) throws Exception
->* 数乘: Matrix Matrix.multiply(double scalar)
->* row reduction: Matrix Matrix.reduce()
+//>* 乘法: Matrix Matrix.multiply(Matrix) throws Exception "Matrix A's width doesn't match Matrix B's height."
+//>* 数乘: Matrix Matrix.multiply(double scalar)
+//>* row reduction: Matrix Matrix.reduce()
 >* linearSolve: Matrix Matrix.linearSolve(Matrix y): return null when no solutions
 >* leastSquareSolve: Matrix Matrix.leastSquareSolve(Matrix y): return exacts solution when possible, apporx. solution otherwise.
 >* 转置: Matrix matrix.reverse()
->* determininant: double Matrix.determinant() throws Exception
+>* determinant: double Matrix.determinant() throws Exception
 >* 求逆： Matrix Matrix.inverse() throws Exception
 >* SVD: Matrix[] Matrix.SVD() throws Exception. The returned list contains 3 entries, represents U Σ and V'
 >* copy: Matrix Matrix.copy()
