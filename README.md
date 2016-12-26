@@ -30,8 +30,8 @@ Matrix类
 //>* 构造函数: int m, int n, double initial.
 //>* 构造函数：int m, int n
 //>* 构造函数：Matrix mat
->* 加法: Matrix Matrix.add(Matrix)
->* 减法： Matrix Matrix.sub(Matrix)
+//>* 加法: Matrix Matrix.add(Matrix)
+//>* 减法： Matrix Matrix.sub(Matrix)
 //>* 乘法: Matrix Matrix.multiply(Matrix) throws Exception "Matrix A's width doesn't match Matrix B's height."
 //>* 数乘: Matrix Matrix.multiply(double scalar)
 //>* row reduction: Matrix Matrix.reduce()
