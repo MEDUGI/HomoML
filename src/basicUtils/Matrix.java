@@ -42,24 +42,20 @@ public class Matrix {
 	}
 	
 	public Matrix add(Matrix b) {
-		try {
-			for (int i = 0; i < m; i ++) 
-				for (int j = 0; j < n; j ++) 
-					data[i][j] += b.data[i][j];
-		} catch (Exception e) {
-			
-		}
-		return this;
+		if (b.n != n || b.m != m) return null;
+		Matrix ans = new Matrix(n,m,0);
+		for (int i = 0; i < m; i ++) 
+			for (int j = 0; j < n; j ++) 
+				ans.data[i][j] = data[i][j] + b.data[i][j];
+		return ans;
 	}
 	public Matrix sub(Matrix b) {
-		try {
-			for (int i = 0; i < m; i ++) 
-				for (int j = 0; j < n; j ++) 
-					data[i][j] -= b.data[i][j];
-		} catch (Exception e) {
-			
-		}
-		return this;
+		if (b.n != n || b.m != m) return null;
+		Matrix ans = new Matrix(n,m,0);
+		for (int i = 0; i < m; i ++) 
+			for (int j = 0; j < n; j ++) 
+				ans.data[i][j] = data[i][j] - b.data[i][j];
+		return ans;
 	}
 	public Matrix multiply(Matrix b) throws Exception {
 		if (n != b.m)
@@ -77,8 +73,7 @@ public class Matrix {
 			for (int j = 0; j < n; j ++) 
 				ans.data[i][j] *= x;
 		return ans;
-	}
-	
+	}	
 	public Matrix reverse() {
 		Matrix y = new Matrix(n,m);
 		for (int i = 0; i < m; i ++) 
@@ -100,15 +95,17 @@ public class Matrix {
 		return ans;
 	}
 	
-	// @return: 高斯消去后获得的上三角矩阵
-	public Matrix reduce() {
+	// @return: 将矩阵通过高斯消去变成上三角矩阵，返回交换行次数
+	public int reduce() {
+		int swapTimes = 0;
 		for (int h = 0; h < m; h++) {
 			int maxRow = h;
 			for (int i = h+1; i < m; i ++)
 				if (cmp(Math.abs(data[i][h]),Math.abs(data[maxRow][h])) > 0) maxRow = i;
-			if (maxRow != h) 
+			if (maxRow != h) { 
 				swapRow(h, maxRow);
-			
+				swapTimes ++;
+			}
 			if (cmp(data[maxRow][h], 0) == 0) { //all 0
 				continue;
 			}			
@@ -117,48 +114,10 @@ public class Matrix {
 				for (int j = h; j < n; j++)
 					data[i][j] -= data[h][j] * temp;				
 			}
-			//System.out.println("case " + i + "maxj ");
-			//print();
 		}
-		return this;
+		return swapTimes;
 	}
-
-	public Matrix inverse() {
-		Matrix ans = new Matrix(m, n, 1);
-		if (m != n) {
-			//throw exception
-			return ans;
-		}
-		
-		for (int i = 0; i < n; i++) {
-			int maxj = i;
-			for (int j = i+1; j < n; j ++)
-				if (cmp(Math.abs(data[j][i]),Math.abs(data[maxj][i])) > 0) maxj = j;
-			if (cmp(data[maxj][i], 0) == 0) { //all 0
-				//非满秩矩阵，no inverse
-				return ans;
-			}
-			swapRow(i, maxj); 
-			ans.swapRow(i, maxj);
-			// change the 45du data to 1
-			double temp = data[i][i];
-			data[i][i] = 1;
-			ans.data[i][i] /= temp; 
-			// row 0->n, change data[j][i] to 0 
-			for (int j = 0; j < n; j ++) 
-				if (j != i) {
-					temp = data[j][i];
-					for (int k = 0; k < n; k++) {
-						data[j][k] -= (temp*data[i][k]); 
-						ans.data[j][k] -= (temp*ans.data[i][k]);
-					}
-			}
-			//System.out.println("case " + i + "maxj ");
-			print();
-		}
-		return ans;
-	}
-	// @return 高斯消元解线性方程组后的
+	// @return 高斯消元解线性方程组后的向量
 	public Matrix linearSolve(Matrix valueVector) {
 		if (valueVector.m != m)
 			return null;
@@ -174,9 +133,8 @@ public class Matrix {
 		for (int i = 0; i < m; i ++) {
 			double temp = augmentedMatrix.data[i][i];
 			if (cmp(temp, 0) != 0) {				
-				for (int j = i; j <= n; j++) {
+				for (int j = i; j <= n; j++) 
 					augmentedMatrix.data[i][j] /= temp;
-				}
 			}
 		}		
 		// back substitution
@@ -193,7 +151,42 @@ public class Matrix {
 			solutionVector.data[i][0] = augmentedMatrix.data[i][n];
 		return solutionVector;
 	}
-	
+	// @return 行列式
+	public double determinant() throws Exception {
+        if (m != n)
+            throw new Exception("It's not a square matrix.");
+        Matrix matrix = new Matrix(this);
+        int swapTimes = matrix.reduce();
+        double result = 1.0;
+        for(int i = 0; i < matrix.n; i++) {
+            result *= matrix.data[i][i];
+        }
+        if (swapTimes % 2 == 1)
+            result *= -1;
+        return result;		
+	}
+	public int getRank() {
+		Matrix mat = this.copy();
+		mat.reduce();
+		int i = 0;
+		while (i < m && cmp(data[i][i],0)!=0) i++;
+		return i;
+	}
+	public Matrix inverse() {		
+		if (m != n) {
+			throw new Exception("It's not a square matrix.");
+		Matrix rightMat = new Matrix(m,n,0);
+		for (int i = 0; i < m; i ++)
+			rightMat.data[i][i] = 1;
+		Matrix mat = columnUnion(rightMat);
+		
+		int rank = getRank();
+		if (rank != n) 
+			throw new Exception("The rank of matrix is not equal its height.");
+		Matrix ans = new Matrix(m, n, 1);
+		return ans;
+	}
+
 	
 	
 	private int cmp(double a, double b) {
@@ -212,31 +205,38 @@ public class Matrix {
 		}
 	}
 	
+	
+
+	public double vectorLength(Matrix vector) throws Exception {
+        if (vector.n != 1)
+            throw new Exception("The inputed matrix is not a vector");
+        double result = 0;
+        for(int i = 0; i < vector.m; i++)
+            result += vector.data[i][0] * vector.data[i][0];
+        return Math.sqrt(result);		
+	}
+    public double[][] rawData() {
+    	double newdata = new double[m][n];
+    	for (int i = 0; i < m; i ++)
+    		for (int j = 0; j < n; j ++)
+    			newdata[i][j] = data[i][j];
+        return newdata;
+    }
+    public Matrix leastSquareSolve(Matrix y) {
+        return null;
+    }
+
+    public Matrix[] svd() {
+        return null;
+    }
+    public Matrix copy() {
+    	return new Matrix(this);
+    }
 	public void print() {
 		for (int i = 0; i < m; i++) {
 			for (int j = 0; j < n; j++)
 				System.out.print(data[i][j] + " ");
 			System.out.println();
 		}
-	}	
-
-  
-    public double[][] rawData() {
-        return null;
-    }
-    public Matrix leastSquareSolve(Matrix y) {
-        return null;
-    }
-    public Matrix transpose() {
-        return null;
-    }
-    public double determinant() {
-        return 0;
-    }
-    public Matrix[] svd() {
-        return null;
-    }
-    public Matrix copy() {
-        return null;
-    }
+	}
 }
