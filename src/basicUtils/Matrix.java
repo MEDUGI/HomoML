@@ -163,17 +163,17 @@ public class Matrix {
 	}
 	// @return 行列�?
 	public double determinant() throws Exception {
-        if (m != n)
-            throw new Exception("It's not a square matrix.");
-        Matrix matrix = new Matrix(this);
-        int swapTimes = matrix.reduce();
-        double result = 1.0;
-        for(int i = 0; i < matrix.n; i++) {
-            result *= matrix.data[i][i];
-        }
-        if (swapTimes % 2 == 1)
-            result *= -1;
-        return result;		
+		if (m != n)
+		    throw new Exception("It's not a square matrix.");
+		Matrix matrix = new Matrix(this);
+		int swapTimes = matrix.reduce();
+		double result = 1.0;
+		for(int i = 0; i < matrix.n; i++) {
+		    result *= matrix.data[i][i];
+		}
+		if (swapTimes % 2 == 1)
+		    result *= -1;
+		return result;		
 	}
 	public int getRank() {
 		Matrix mat = this.copy();
@@ -197,22 +197,6 @@ public class Matrix {
 			throw new Exception("The rank of matrix is not equal its height.");
 		augmentedMatrix.normalization();
 		augmentedMatrix.backSubstitution();
-/*		// change the 45du data to 1
-		for (int i = 0; i < m; i ++) {
-			double temp = augmentedMatrix.data[i][i];
-			if (cmp(temp, 0) != 0) {				
-				for (int j = i; j < augmentedMatrix.n; j++) 
-					augmentedMatrix.data[i][j] /= temp;
-			}
-		}		
-		// back substitution
-			for (int i = m-1; i > 0; i --)
-			for (int j = i-1; j >= 0; j--) {
-				double temp = augmentedMatrix.data[j][i];
-				for (int k = i; k < augmentedMatrix.n; k ++) {
-					augmentedMatrix.data[j][k] -= augmentedMatrix.data[i][k] * temp;
-				}
-			}	*/
 		// get inverse matrix
 		double[][] newdata = new double[m][n];		
 		for (int i = 0; i < m; i ++)
@@ -220,13 +204,13 @@ public class Matrix {
 				newdata[i][j-n] = augmentedMatrix.data[i][j];
 		return new Matrix(newdata);
 	}
-    public Matrix leastSquareSolve(Matrix y) {
-        return null;
-    }
-
-    public Matrix[] svd() {
-        return null;
-    }
+	public Matrix leastSquareSolve(Matrix y) {
+	    return null;
+	}
+	
+	public Matrix[] svd() {
+	    return null;
+	}
 	
 	
 	private int cmp(double a, double b) {
@@ -247,12 +231,12 @@ public class Matrix {
 	
 	public Matrix subMatrix(int left, int top, int right, int bottom) {
 		int mm = bottom-top, nn = right-left;
-        double[][] newdata = new double[mm][nn];
-        for (int i = top; i < bottom; i ++)
-        	for (int j = left; j < right; j++)
-        		newdata[i-top][j-left] = data[i][j];
-        return new Matrix(newdata);
-    }
+	    double[][] newdata = new double[mm][nn];
+	    for (int i = top; i < bottom; i ++)
+	    	for (int j = left; j < right; j++)
+	    		newdata[i-top][j-left] = data[i][j];
+	    return new Matrix(newdata);
+	}
 	public double get(int x, int y) {
 		return data[x][y];
 	}
@@ -264,24 +248,24 @@ public class Matrix {
 	}
 
 	public double vectorLength(Matrix vector) throws Exception {
-        if (vector.n != 1)
-            throw new Exception("The inputed matrix is not a vector");
-        double result = 0;
-        for(int i = 0; i < vector.m; i++)
-            result += vector.data[i][0] * vector.data[i][0];
-        return Math.sqrt(result);		
+	    if (vector.n != 1)
+	        throw new Exception("The inputed matrix is not a vector");
+	    double result = 0;
+	    for(int i = 0; i < vector.m; i++)
+	        result += vector.data[i][0] * vector.data[i][0];
+	    return Math.sqrt(result);		
 	}
-    public double[][] rawData() {
-    	double[][] newdata = new double[m][n];
-    	for (int i = 0; i < m; i ++)
-    		for (int j = 0; j < n; j ++)
-    			newdata[i][j] = data[i][j];
-        return newdata;
-    }
+	public double[][] rawData() {
+		double[][] newdata = new double[m][n];
+		for (int i = 0; i < m; i ++)
+			for (int j = 0; j < n; j ++)
+				newdata[i][j] = data[i][j];
+	    return newdata;
+	}
 
-    public Matrix copy() {
-    	return new Matrix(this);
-    }
+	public Matrix copy() {
+		return new Matrix(this);
+	}
 	public void print() {
 		for (int i = 0; i < m; i++) {
 			for (int j = 0; j < n; j++)
