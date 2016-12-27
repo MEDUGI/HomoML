@@ -117,6 +117,28 @@ public class Matrix {
 		}
 		return swapTimes;
 	}
+
+	// change the 45du data to 1
+	public boolean normalization() {
+		for (int i = 0; i < m; i ++) {
+			double temp = data[i][i];
+			if (cmp(temp, 0) != 0) {				
+				for (int j = i; j < n; j++) 
+					data[i][j] /= temp;
+			}
+		}			
+		return true;
+	}
+	private boolean backSubstitution() {
+		for (int i = m-1; i > 0; i --)
+			for (int j = i-1; j >= 0; j--) {
+				double temp = data[j][i];
+				for (int k = i; k < n; k ++) {
+					data[j][k] -= data[i][k] * temp;
+				}
+			}			
+		return true;
+	}
 	// @return 高斯消元解线性方程组后的向量
 	public Matrix linearSolve(Matrix valueVector) {
 		if (valueVector.m != m)
@@ -129,24 +151,12 @@ public class Matrix {
 		} catch (Exception e) {
 			return null;
 		}
-		// change the 45du data to 1
-		for (int i = 0; i < m; i ++) {
-			double temp = augmentedMatrix.data[i][i];
-			if (cmp(temp, 0) != 0) {				
-				for (int j = i; j <= n; j++) 
-					augmentedMatrix.data[i][j] /= temp;
-			}
-		}		
+		// normalization
+		augmentedMatrix.normalization();
 		// back substitution
-		Matrix solutionVector = new Matrix(m, 1, 0);
-		for (int i = m-1; i > 0; i --)
-			for (int j = i-1; j >= 0; j--) {
-				double temp = augmentedMatrix.data[j][i];
-				for (int k = i; k < n+1; k ++) {
-					augmentedMatrix.data[j][k] -= augmentedMatrix.data[i][k] * temp;
-				}
-			}		
+		augmentedMatrix.backSubstitution();		
 		// get solutionVector
+		Matrix solutionVector = new Matrix(m, 1, 0);
 		for (int i = 0; i < m; i ++) 
 			solutionVector.data[i][0] = augmentedMatrix.data[i][n];
 		return solutionVector;
@@ -178,15 +188,45 @@ public class Matrix {
 		Matrix rightMat = new Matrix(m,n,0);
 		for (int i = 0; i < m; i ++)
 			rightMat.data[i][i] = 1;
-		Matrix mat = columnUnion(rightMat);
+		Matrix augmentedMatrix = columnUnion(rightMat);
 		
-		int rank = getRank();
-		if (rank != n) 
+		augmentedMatrix.reduce();
+		int rank = 0;
+		while (rank < m && cmp(data[rank][rank],0)!=0) rank++;
+		if (rank != m) 
 			throw new Exception("The rank of matrix is not equal its height.");
-		Matrix ans = new Matrix(m, n, 1);
-		return ans;
+		augmentedMatrix.normalization();
+		augmentedMatrix.backSubstitution();
+/*		// change the 45du data to 1
+		for (int i = 0; i < m; i ++) {
+			double temp = augmentedMatrix.data[i][i];
+			if (cmp(temp, 0) != 0) {				
+				for (int j = i; j < augmentedMatrix.n; j++) 
+					augmentedMatrix.data[i][j] /= temp;
+			}
+		}		
+		// back substitution
+			for (int i = m-1; i > 0; i --)
+			for (int j = i-1; j >= 0; j--) {
+				double temp = augmentedMatrix.data[j][i];
+				for (int k = i; k < augmentedMatrix.n; k ++) {
+					augmentedMatrix.data[j][k] -= augmentedMatrix.data[i][k] * temp;
+				}
+			}	*/
+		// get inverse matrix
+		double[][] newdata = new double[m][n];		
+		for (int i = 0; i < m; i ++)
+			for (int j = n; j < n+n; j++)
+				newdata[i][j-n] = augmentedMatrix.data[i][j];
+		return new Matrix(newdata);
 	}
+    public Matrix leastSquareSolve(Matrix y) {
+        return null;
+    }
 
+    public Matrix[] svd() {
+        return null;
+    }
 	
 	
 	private int cmp(double a, double b) {
@@ -206,9 +246,22 @@ public class Matrix {
 	}
 	
 	public Matrix subMatrix(int left, int top, int right, int bottom) {
-        //TODO: add a method of getting subMatrix
-        return null;
+		int mm = bottom-top, nn = right-left;
+        double[][] newdata = new double[mm][nn];
+        for (int i = top; i < bottom; i ++)
+        	for (int j = left; j < right; j++)
+        		newdata[i-top][j-left] = data[i][j];
+        return new Matrix(newdata);
     }
+	public double get(int x, int y) {
+		return data[x][y];
+	}
+	public boolean set(int x, int y, double value) {
+		if (x >= m || x < 0) return false;
+		if (y >= n || y < 0) return false;
+		data[x][y] = value;
+		return true;
+	}
 
 	public double vectorLength(Matrix vector) throws Exception {
         if (vector.n != 1)
@@ -225,13 +278,7 @@ public class Matrix {
     			newdata[i][j] = data[i][j];
         return newdata;
     }
-    public Matrix leastSquareSolve(Matrix y) {
-        return null;
-    }
 
-    public Matrix[] svd() {
-        return null;
-    }
     public Matrix copy() {
     	return new Matrix(this);
     }
