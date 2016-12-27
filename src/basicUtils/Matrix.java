@@ -95,7 +95,7 @@ public class Matrix {
 		return ans;
 	}
 	
-	// @return: 将矩阵通过高斯消去变成上三角矩阵，返回交换行次数
+	// @return: 将矩阵�?�过高斯消去变成上三角矩阵，返回交换行次�?
 	public int reduce() {
 		int swapTimes = 0;
 		for (int h = 0; h < m; h++) {
@@ -151,7 +151,7 @@ public class Matrix {
 			solutionVector.data[i][0] = augmentedMatrix.data[i][n];
 		return solutionVector;
 	}
-	// @return 行列式
+	// @return 行列�?
 	public double determinant() throws Exception {
         if (m != n)
             throw new Exception("It's not a square matrix.");
@@ -172,8 +172,8 @@ public class Matrix {
 		while (i < m && cmp(data[i][i],0)!=0) i++;
 		return i;
 	}
-	public Matrix inverse() {		
-		if (m != n) {
+	public Matrix inverse() throws Exception{
+		if (m != n)
 			throw new Exception("It's not a square matrix.");
 		Matrix rightMat = new Matrix(m,n,0);
 		for (int i = 0; i < m; i ++)
@@ -216,7 +216,7 @@ public class Matrix {
         return Math.sqrt(result);		
 	}
     public double[][] rawData() {
-    	double newdata = new double[m][n];
+    	double[][] newdata = new double[m][n];
     	for (int i = 0; i < m; i ++)
     		for (int j = 0; j < n; j ++)
     			newdata[i][j] = data[i][j];
