@@ -41,7 +41,7 @@ public class MnistDataProvider extends ImageDataProvider{
             double[][] label = new double[dataNumber][1];
 
             for(int i = 0; i < dataNumber; i++) {
-                label[i][0] = dataInputStream.readByte();
+                label[i][0] = dataInputStream.readUnsignedByte();
             }
             labelMatrix = new Matrix(label);
         }
@@ -64,7 +64,7 @@ public class MnistDataProvider extends ImageDataProvider{
 
             for(int i = 0; i < dataNumber; i++) {
                 for(int j = 0; j < dataLength; j++)
-                    rawData[i][j] = dataInputStream.readByte();
+                    rawData[i][j] = dataInputStream.readUnsignedByte();
             }
             dataMatrix = new Matrix(rawData);
         }

@@ -1,7 +1,6 @@
-package SemeionExample;
+package test.semeionExample;
 
 import basicUtils.ContourExtractor;
-import dataInterface.FeaturedDataProvider;
 import dataInterface.SemeionDataProvider;
 
 /**
