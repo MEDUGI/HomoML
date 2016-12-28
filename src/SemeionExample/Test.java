@@ -9,6 +9,9 @@ import dataInterface.SemeionDataProvider;
  * Contact him on zxx_1996@qq.com
  */
 public class Test {
-    SemeionDataProvider semeionDataProvider = new SemeionDataProvider("C:\\Users\\zxx_1\\Desktop\\semeion.data", new ContourExtractor(16,16));
-    // TODO: complete the Test on semeion.data
+    public static void main(String[] args) {
+        SemeionDataProvider semeionDataProvider = new SemeionDataProvider("C:\\Users\\zxx_1\\Desktop\\semeion.data", new ContourExtractor(16,16));
+        System.out.println(1+1);
+        // TODO: complete the Test on semeion.data
+    }
 }

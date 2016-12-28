@@ -20,7 +20,8 @@ public class ContourExtractor implements FeatureExtractor{
         try {
             Matrix result = transformOnOneEntry(rawData.subMatrix(0, 0, dataLength, 1));
             for (int i = 1; i < dataNumber; i++) {
-                result = result.columnUnion(transformOnOneEntry(rawData.subMatrix(0, dataNumber, dataLength, dataNumber + 1)));
+                Matrix transferedResult = transformOnOneEntry(rawData.subMatrix(0, i, dataLength, i + 1));
+                result = result.columnUnion(transferedResult);
             }
             return result;
         } catch (Exception e) {
@@ -79,7 +80,7 @@ public class ContourExtractor implements FeatureExtractor{
             featureData[0][k] = count;
             k++;
         }
-        if (k != imageHeight * imageWidth)
+        if (k != 2 * imageHeight + 2 * imageWidth)
             throw new Exception("The k is added wrong times!");
         return new Matrix(featureData);
     }
