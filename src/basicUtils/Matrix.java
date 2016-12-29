@@ -1,5 +1,7 @@
 package basicUtils;
 
+import testMatrix.Matrix;
+
 /**
  * Created by tmy on 2016/12/10.
  */
@@ -9,6 +11,7 @@ public class Matrix {
 	public int n; // width
 	public double data[][];
 	private static double eps = 1e-8;
+	private static double MAXD = (double)9e14;
 	
 	public Matrix() {}
 	public Matrix( double[][] data) {
@@ -212,9 +215,36 @@ public class Matrix {
 	    return null;
 	}
 	
+	// @return norm1: the max abs_sum of lines
+	public double getNorm1() {
+		double norm1 = 0.0;
+		for (int j = 0; j < n; j++) {
+			double sum = 0.0;
+			for (int i = 0; i < m; i++)
+				sum += Math.abs(data[i][j]);
+			if (cmp(sum, norm1) > 1) norm1 = sum;
+		}
+		return norm1;
+	}
+	// @return norm2: the sqrt of the eigenvalues of AT*A 
+	public double getNorm2() {
+		Matrix T = this.reverse();
+		return 0.0;
+	}
+	// @return norm3: the max abs_sum of rows
+	public double getNorm3() {
+		double norm3 = 0.0;
+		for (int i = 0; i < m; i++) {
+			double sum = 0.0;
+			for (int j = 0; j < n; j++)
+				sum += Math.abs(data[i][j]);
+			if (cmp(sum, norm3) > 0)
+				norm3 = sum;
+		}
+		return norm3;
+	}
 	
 	private int cmp(double a, double b) {
-		//System.out.println("cmp " + a + ", "+ b);
 		if (a-b > eps) return 1;
 		if (b-a > eps) return -1;
 		return 0;
@@ -239,12 +269,31 @@ public class Matrix {
 	}
 	public double get(int x, int y) {
 		return data[x][y];
-	}
+	}	
 	public boolean set(int x, int y, double value) {
 		if (x >= m || x < 0) return false;
 		if (y >= n || y < 0) return false;
 		data[x][y] = value;
 		return true;
+	}
+	// @return data[x][]
+	public double[] get(int x) {
+		double[] newrow = new double[n];
+		for (int j = 0; j < n; j++)
+			newrow[j] = data[x][j];
+		return newrow;
+	}
+	public int getHeight() {
+		return m;
+	}
+	public void setHeight(int height) {
+		m = height;
+	}
+	public int getWidth() {
+		return n;
+	}
+	public void setWidth(int width) {
+		n = width;
 	}
 
 	public double vectorLength(Matrix vector) throws Exception {
@@ -255,6 +304,7 @@ public class Matrix {
 	        result += vector.data[i][0] * vector.data[i][0];
 	    return Math.sqrt(result);		
 	}
+	// @return data[][]
 	public double[][] rawData() {
 		double[][] newdata = new double[m][n];
 		for (int i = 0; i < m; i ++)
