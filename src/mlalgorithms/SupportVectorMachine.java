@@ -13,15 +13,21 @@ public class SupportVectorMachine {
     private DataProvider data;
     private Matrix productMatrix;
     private ArrayList<Double> alpha;
-    private ArrayList<Matrix> supportVectors;
-    private Matrix w;
     private double b;
     private double C=1.0f;
     private static final double eps=0.0001;
     private double tol = 1e-3; // 判断收敛的边界,重要参数
     private boolean isInit=false;
-    SupportVectorMachine() {
 
+    public SupportVectorMachine() {
+    }
+
+    public SupportVectorMachine(DataProvider dp) {
+        data=dp;
+    }
+    public SupportVectorMachine(DataProvider dp,KernelFunction k) {
+        data=dp;
+        fKernel = k;
     }
 
     public void train() {
@@ -29,14 +35,19 @@ public class SupportVectorMachine {
             System.err.println("Not Enough Data");
             return ;
         }
-        Init();
         SMO();
         System.err.println("Train Has Finished!");
     }
 
-    private double calE(int i) {
-        // 计算f(x)=WT*x-b
-        return w.reverse().multiply(data.getDataMatrix().get(i)).get(1,1)-b;
+    private double calE(int j) {
+        // 计算ui-yi
+        double f = 0.0;
+        Matrix x=data.getDataMatrix().get(j);
+        for (int i=0;i<alpha.size();i++) {
+            f = f + alpha.get(i)*data.getLabelMatrix().get(i,1)*fKernel.cal(data.getDataMatrix().get(i),x);
+        }
+        f = f+b-data.getLabelMatrix().get(j,1);
+        return f;
     }
 
     private double abs(double i) {
@@ -45,6 +56,9 @@ public class SupportVectorMachine {
     }
 
     private void SMO() {
+        if (!isInit) {
+            Init();
+        }
         int i = 0;
         int j = 0;
         while (!convergence()) {  // 未收敛就做
@@ -71,8 +85,8 @@ public class SupportVectorMachine {
             }
             j=maxj;
             double Ej=calE(j);
-            double yi = data.getLabelMatrix().get(i);
-            double yj = data.getLabelMatrix().get(j);
+            double yi = data.getLabelMatrix().get(i,1);
+            double yj = data.getLabelMatrix().get(j,1);
             double oldalphai=alpha.get(i).doubleValue();
             double oldalphaj=alpha.get(j).doubleValue();
             double L, H;
@@ -91,7 +105,7 @@ public class SupportVectorMachine {
             else if (newAlphaj>H) alpha.set(j,H);
             else alpha.set(j,newAlphaj);
             double aj = alpha.get(j).doubleValue();
-            alpha.set(i,oldalphai + yi * yj * (oldalphaj - aj);
+            alpha.set(i,oldalphai + yi * yj * (oldalphaj - aj));
             double ai = alpha.get(i).doubleValue();
             double b1 = b - Ei - yi * (ai - oldalphai) * productMatrix.get(i, i) - yj * (aj - oldalphaj) * productMatrix.get(i, j);
             double b2 = b - Ej - yi * (ai - oldalphai) * productMatrix.get(i, j) - yj * (aj - oldalphaj) * productMatrix.get(j, j);
@@ -108,7 +122,7 @@ public class SupportVectorMachine {
     private void Init() {
         //初始化alpha的权值，应该是全置0或者令alpha为0到C之间的某个随机数
         //Todo alpha参数还有很多优化可能
-        alpha = new ArrayList<Double>(Collections.nCopies(data.getDataMatrix().n, new Double(0.0)));
+        alpha = new ArrayList<Double>(Collections.nCopies(data.getDataMatrix().getWidth(), new Double(0.0)));
         //初始化b的值，可以考虑随机或者置默认值
         //Todo 后续优化b参数取值
         b = 1;
@@ -120,7 +134,7 @@ public class SupportVectorMachine {
 
     private void GetKernelMatrix() {
         Matrix x=data.getDataMatrix();
-        int height = x.m;
+        int height = x.getHeight();
         for (int i=0;i<height;i++) {
             for (int j=0;j<height;j++) {
                 double temp = fKernel.cal(x.get(i),x.get(j));
@@ -138,9 +152,9 @@ public class SupportVectorMachine {
         * yi*Ei <=0 when alpha = C
         */
         for (int i = 0;i<alpha.size();i++) {
-            if ((data.getLabelMatrix().get(i)*calE(i)>=0 && Math.abs(alpha.get(i))<tol)
-                ||(Math.abs(data.getLabelMatrix().get(i)*calE(i))<tol && alpha.get(i)>0 && alpha.get(i)-C < 0)
-                ||(data.getLabelMatrix().get(i)*calE(i)>=0 && Math.abs(alpha.get(i)-C)<tol )) {
+            if ((data.getLabelMatrix().get(i,1)*calE(i)>=0 && Math.abs(alpha.get(i))<tol)
+                ||(Math.abs(data.getLabelMatrix().get(i,1)*calE(i))<tol && alpha.get(i)>0 && alpha.get(i)-C < 0)
+                ||(data.getLabelMatrix().get(i,1)*calE(i)>=0 && Math.abs(alpha.get(i)-C)<tol )) {
                 continue;
             }
             else {
@@ -150,20 +164,23 @@ public class SupportVectorMachine {
         return true;
     }
 
+    public int test(Matrix x) {
+        // 在这里我发现，实际上还是要保留支持向量，因为测试的时候不可能单靠内积来进行计算。
+        double f = 0.0;
+        for (int i=0;i<alpha.size();i++) {
+            f = f + alpha.get(i)*data.getLabelMatrix().get(i,1)*fKernel.cal(data.getDataMatrix().get(i),x);
+        }
+        f += b;
+        if (f > 0) return 1;
+        else return -1;
+    }
+
     public KernelFunction getfKernel() {
         return fKernel;
     }
 
     public void setfKernel(KernelFunction fKernel) {
         this.fKernel = fKernel;
-    }
-
-    public ArrayList<Matrix> getSupportVectors() {
-        return supportVectors;
-    }
-
-    public Matrix getW() {
-        return w;
     }
 
     public double getB() {

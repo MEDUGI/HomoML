@@ -8,6 +8,12 @@ import basicUtils.Matrix;
  */
 public class RBFKernel implements KernelFunction{
     private double gamma=0.0;
+
+    public RBFKernel() {
+    }
+    public RBFKernel(double g) {
+        gamma = g;
+    }
     public double cal(Matrix x, Matrix y) {
         return Math.exp(-1*gamma*Mathtools.getL2(x.reverse(),y));
     }
