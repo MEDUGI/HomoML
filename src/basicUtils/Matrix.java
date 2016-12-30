@@ -1,4 +1,4 @@
-package basicUtils;
+package testMatrix;
 
 import testMatrix.Matrix;
 
@@ -272,17 +272,52 @@ public class Matrix {
 		}	
 		return 0.0;
 	}
-	// @return norm3: the max abs_sum of rows
-	public double getNorm3() {
-		double norm3 = 0.0;
+	// @return norm: the max abs_sum of rows
+	public double getNormInfinity() {
+		double norm = 0.0;
 		for (int i = 0; i < m; i++) {
 			double sum = 0.0;
 			for (int j = 0; j < n; j++)
 				sum += Math.abs(data[i][j]);
-			if (cmp(sum, norm3) > 0)
-				norm3 = sum;
+			if (cmp(sum, norm) > 0)
+				norm = sum;
 		}
-		return norm3;
+		return norm;
+	}
+	// @return normF: the Frobenius norm
+	public double getNormF() {
+		double normF = 0.0;
+		for (int i = 0; i < m; i ++)
+			for (int j = 0; j < n; j++)
+				normF += data[i][j] * data[i][j];
+		normF = Math.sqrt(normF);
+		return normF;
+	}
+	// @return norm2: the norm2 for vector
+	public double getNorm2Vector() {
+		double norm2 = 0.0;
+		for (int i = 0; i < m; i++)
+			norm2 += data[i][0];
+		norm2 = Math.sqrt(norm2);
+		return norm2;
+	}
+	// @return norm: the min abs_sum of rows
+	public double getNormInfinitesimalVector() {
+		double norm = 0.0;
+		for (int i = 0; i < m; i++) {
+			double sum = 0.0;
+			for (int j = 0; j < n; j++)
+				sum += Math.abs(data[i][j]);
+			if (cmp(sum, norm) < 0)
+				norm = sum;
+		}
+		return norm;
+	}
+	public double getNormPVector(double p) {
+		double norm = 0.0;
+		for (int i = 0; i < m; i ++)
+			norm += Math.pow(Math.abs(data[i][0]), p) / p;
+		return norm;
 	}
 	
 	private int cmp(double a, double b) {
