@@ -7,11 +7,10 @@ import testMatrix.Matrix;
  */
 public class Matrix {
     //TODO: all the methods in this class are remained for implementation
-	public int m; // height
-	public int n; // width
-	public double data[][];
+	private int m; // height
+	private int n; // width
+	private double data[][];
 	private static double eps = 1e-8;
-	private static double MAXD = (double)9e14;
 	
 	public Matrix() {}
 	public Matrix( double[][] data) {
@@ -60,6 +59,7 @@ public class Matrix {
 				ans.data[i][j] = data[i][j] - b.data[i][j];
 		return ans;
 	}
+	// this*b
 	public Matrix multiply(Matrix b) throws Exception {
 		if (n != b.m)
 			throw new Exception("Matrix A's width doesn't match Matrix B's height.");
@@ -154,9 +154,7 @@ public class Matrix {
 		} catch (Exception e) {
 			return null;
 		}
-		// normalization
 		augmentedMatrix.normalization();
-		// back substitution
 		augmentedMatrix.backSubstitution();		
 		// get solutionVector
 		Matrix solutionVector = new Matrix(m, 1, 0);
@@ -215,6 +213,41 @@ public class Matrix {
 	    return null;
 	}
 	
+	
+	public void unification() {
+		for (int j = 0; j < n; j ++) {
+			double sum = 0.0;
+			for (int i = 0; i < m; i ++)
+				sum += data[i][j];
+			for (int i = 0; i < m; i++)
+				if (cmp(sum,0)!=0)
+					data[i][j] /= sum;
+		}
+	}
+	// @return the max eigenvalue of Matrix, and the eigenvector changed
+	public double getMAXEigenvalue(Matrix eigenvector) {		
+		Matrix W = copy();
+		W.unification();
+		double[][] newdata = new double[m][1];
+		for (int i = 0; i < m; i++) {
+			double sum = 0.0;
+			for (int j = 0; j < n; j++)
+				sum += W.data[i][j];
+			newdata[i][0] = sum;
+		}
+		Matrix WW = new Matrix(newdata);
+		WW.unification();
+		eigenvector = WW.copy();
+		double ans = 0.0; 
+		try {
+			Matrix ANS = this.multiply(WW);
+			for (int i = 0; i < m; i ++)
+				ans += ANS.data[i][0] / WW.data[i][0];
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ans/m;
+	}
 	// @return norm1: the max abs_sum of lines
 	public double getNorm1() {
 		double norm1 = 0.0;
@@ -226,9 +259,17 @@ public class Matrix {
 		}
 		return norm1;
 	}
-	// @return norm2: the sqrt of the eigenvalues of AT*A 
+	// @return norm2: the sqrt of the max eigenvalue of AT*A 
 	public double getNorm2() {
 		Matrix T = this.reverse();
+		try {
+			Matrix mat = T.multiply(this);
+			Matrix eigenvector = new Matrix();
+			double eigenvalue = mat.getMAXEigenvalue(eigenvector);
+			return Math.sqrt(eigenvalue);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
 		return 0.0;
 	}
 	// @return norm3: the max abs_sum of rows
@@ -267,6 +308,7 @@ public class Matrix {
 	    		newdata[i-top][j-left] = data[i][j];
 	    return new Matrix(newdata);
 	}
+
 	public double get(int x, int y) {
 		return data[x][y];
 	}	
@@ -276,12 +318,12 @@ public class Matrix {
 		data[x][y] = value;
 		return true;
 	}
-	// @return data[x][]
-	public double[] get(int x) {
-		double[] newrow = new double[n];
+	// @return Matrix for data[x][] (1*width)
+	public Matrix get(int x) {
+		double[][] newrow = new double[1][n];
 		for (int j = 0; j < n; j++)
-			newrow[j] = data[x][j];
-		return newrow;
+			newrow[0][j] = data[x][j];		
+		return new Matrix(newrow);
 	}
 	public int getHeight() {
 		return m;
@@ -305,7 +347,7 @@ public class Matrix {
 	    return Math.sqrt(result);		
 	}
 	// @return data[][]
-	public double[][] rawData() {
+	public double[][] getData() {
 		double[][] newdata = new double[m][n];
 		for (int i = 0; i < m; i ++)
 			for (int j = 0; j < n; j ++)
