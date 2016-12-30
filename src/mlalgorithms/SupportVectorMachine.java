@@ -44,9 +44,9 @@ public class SupportVectorMachine {
         double f = 0.0;
         Matrix x=data.getDataMatrix().get(j);
         for (int i=0;i<alpha.size();i++) {
-            f = f + alpha.get(i)*data.getLabelMatrix().get(i,1)*fKernel.cal(data.getDataMatrix().get(i),x);
+            f = f + alpha.get(i)*data.getLabelMatrix().get(i,0)*fKernel.cal(data.getDataMatrix().get(i),x);
         }
-        f = f+b-data.getLabelMatrix().get(j,1);
+        f = f+b-data.getLabelMatrix().get(j,0);
         return f;
     }
 
@@ -85,10 +85,10 @@ public class SupportVectorMachine {
             }
             j=maxj;
             double Ej=calE(j);
-            double yi = data.getLabelMatrix().get(i,1);
-            double yj = data.getLabelMatrix().get(j,1);
-            double oldalphai=alpha.get(i).doubleValue();
-            double oldalphaj=alpha.get(j).doubleValue();
+            double yi = data.getLabelMatrix().get(i,0);
+            double yj = data.getLabelMatrix().get(j,0);
+            double oldalphai=alpha.get(i);
+            double oldalphaj=alpha.get(j);
             double L, H;
             if (yi != yj) {
                 L = Math.max(0, oldalphaj - oldalphai);
@@ -135,6 +135,7 @@ public class SupportVectorMachine {
     private void GetKernelMatrix() {
         Matrix x=data.getDataMatrix();
         int height = x.getHeight();
+        productMatrix = new Matrix(new double[height][height]);
         for (int i=0;i<height;i++) {
             for (int j=0;j<height;j++) {
                 double temp = fKernel.cal(x.get(i),x.get(j));
@@ -152,9 +153,9 @@ public class SupportVectorMachine {
         * yi*Ei <=0 when alpha = C
         */
         for (int i = 0;i<alpha.size();i++) {
-            if ((data.getLabelMatrix().get(i,1)*calE(i)>=0 && Math.abs(alpha.get(i))<tol)
-                ||(Math.abs(data.getLabelMatrix().get(i,1)*calE(i))<tol && alpha.get(i)>0 && alpha.get(i)-C < 0)
-                ||(data.getLabelMatrix().get(i,1)*calE(i)>=0 && Math.abs(alpha.get(i)-C)<tol )) {
+            if ((data.getLabelMatrix().get(i,0)*calE(i)>=0 && Math.abs(alpha.get(i))<tol)
+                ||(Math.abs(data.getLabelMatrix().get(i,0)*calE(i))<tol && alpha.get(i)>0 && alpha.get(i)-C < 0)
+                ||(data.getLabelMatrix().get(i,0)*calE(i)>=0 && Math.abs(alpha.get(i)-C)<tol )) {
                 continue;
             }
             else {

@@ -1,5 +1,6 @@
 package dataInterface;
 
+import basicUtils.BasicImageConvertor;
 import basicUtils.Matrix;
 
 import java.io.*;
@@ -72,16 +73,7 @@ public class MnistDataProvider extends ImageDataProvider{
 
     @Override
     public Matrix toImageMatrix(Matrix rowData) {
-        double[][] row = rowData.rawData();
-        double[][] image = new double[imageHeight][imageWidth];
-        int k = 0;
-        for(int i = 0; i < imageHeight; i++) {
-            for(int j = 0; j < imageWidth; j++) {
-                image[i][j] = row[0][k];
-                k++;
-            }
-        }
-        return new Matrix(image);
+        return new BasicImageConvertor(imageHeight, imageWidth).toImageMatrix(rowData);
     }
 
     @Override

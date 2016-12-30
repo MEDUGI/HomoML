@@ -15,8 +15,8 @@ public class ContourExtractor implements FeatureExtractor{
 
     @Override
     public Matrix dataToFeature(Matrix rawData) {
-        int dataLength = rawData.n;
-        int dataNumber = rawData.m;
+        int dataLength = rawData.getWidth();
+        int dataNumber = rawData.getHeight();
         try {
             Matrix result = transformOnOneEntry(rawData.subMatrix(0, 0, dataLength, 1));
             for (int i = 1; i < dataNumber; i++) {
@@ -31,9 +31,9 @@ public class ContourExtractor implements FeatureExtractor{
     }
 
     public Matrix transformOnOneEntry(Matrix line) throws Exception{
-        if (line.n != imageHeight * imageWidth)
+        if (line.getWidth() != imageHeight * imageWidth)
             throw new Exception("Image size doesn't match.");
-        double[][] rawData = line.rawData();
+        double[][] rawData = line.getData();
         double[][] imageData = new double[imageHeight][imageWidth];
         int k = 0;
         for(int i = 0; i < imageHeight; i++) {
