@@ -19,7 +19,7 @@ public abstract class ConvolutionLayer implements Layer {
     public abstract double isConvergence();
 
     public Matrix forwardPropagation(Matrix input) throws Exception{
-
+        return null;
     }
 
     public abstract Matrix backPropagation(Matrix err);

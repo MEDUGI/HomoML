@@ -43,7 +43,7 @@ public class Matrix {
 	
 	public Matrix add(Matrix b) {
 		if (b.n != n || b.m != m) return null;
-		Matrix ans = new Matrix(m,n,0);
+		Matrix ans = new Matrix(m, n, 0);
 		for (int i = 0; i < m; i ++) 
 			for (int j = 0; j < n; j ++) 
 				ans.data[i][j] = data[i][j] + b.data[i][j];
@@ -51,7 +51,7 @@ public class Matrix {
 	}
 	public Matrix sub(Matrix b) {
 		if (b.n != n || b.m != m) return null;
-		Matrix ans = new Matrix(n,m,0);
+		Matrix ans = new Matrix(m, n, 0);
 		for (int i = 0; i < m; i ++) 
 			for (int j = 0; j < n; j ++) 
 				ans.data[i][j] = data[i][j] - b.data[i][j];
@@ -295,7 +295,7 @@ public class Matrix {
 	public double getNorm2Vector() {
 		double norm2 = 0.0;
 		for (int i = 0; i < m; i++)
-			norm2 += data[i][0];
+			norm2 += data[i][0] * data[i][0];
 		norm2 = Math.sqrt(norm2);
 		return norm2;
 	}
@@ -371,7 +371,7 @@ public class Matrix {
 		n = width;
 	}
 
-	public double vectorLength(Matrix vector) throws Exception {
+	public static double vectorLength(Matrix vector) throws Exception {
 	    if (vector.n != 1)
 	        throw new Exception("The inputed matrix is not a vector");
 	    double result = 0;

@@ -18,6 +18,7 @@ public class SupportVectorMachine {
     private ArrayList<Double> alpha;
     private double b;
     private double C=1.0f;
+    private double eps = 1e-2;
     private double tol = 1e-1; // 判断收敛的边界,重要参数
     private boolean isInit=false;
 
@@ -46,35 +47,88 @@ public class SupportVectorMachine {
         return errorVector.get(j, 0) + b;
     }
 
+    private boolean isKktToleranted(int i) {
+        double expected = calE(i);
+        double value=alpha.get(i);
+        if (expected > 0 && Math.abs(value) > eps) {
+            return false;
+        }
+        if (expected < 0 && Math.abs(value-C) > eps) {
+            return false;
+        }
+        if (Math.abs(expected) < eps){
+            if (value <= 0 || value >= C) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private double calculateKktViolence(int i) {
+        double expected = calE(i);
+        double value=alpha.get(i).doubleValue();
+        if (expected > 0 && Math.abs(value) > eps) {
+            return Math.abs(value);
+        }
+        if (expected < 0 && Math.abs(value-C) > eps) {
+            return Math.abs(value-C);
+        }
+        if (Math.abs(expected) < eps){
+            if (value <= 0) {
+                return Math.abs(value);
+            }
+            if (value >= C) {
+                return Math.abs(value-C);
+            }
+        }
+        return -1;
+    }
+
     private void SMO() {
+        ArrayList<Integer> kktViolatedEntries = new ArrayList<>();
+        double[] kktViolence = new double[dataMatrix.getHeight()];
         if (!isInit) {
             Init();
         }
         int i = 0;
         int j = 0;
         int count = 0;
-        while (!convergence()) {  // 未收敛就做
-            // 选定第一个乘子，采用启发式算法，选定第一个处于0到C之间的乘子
-            if (count%1024 == 0)
-                System.out.println(count);
+        double convergency = 10000;
+        while (convergency > 0.1) {  // 未收敛就做
+
+            if (count >= 0) {
+                System.out.println("count:" + count + "; convergency:" + convergency);
+            }
             count++;
 
-            for (i=0;i<alpha.size();i++){
-                double value=alpha.get(i).doubleValue();
-                if (value <= 0 || value >= C){
-                    break;
-                }
+            for(int index = 0; index < alpha.size(); index++) {
+                kktViolence[index] = calculateKktViolence(index);
+                if (kktViolence[index] >= 0)
+                    kktViolatedEntries.add(index);
             }
 
+            // 选定i，其中要i对应数据项不满足KKT条件且尽可能多地违背KKT条件
+            double valueTemp = -0.01;
+            int iTemp = -1;
+            for(Integer index : kktViolatedEntries) {
+                if (kktViolence[index] > valueTemp) {
+                    iTemp = index;
+                    valueTemp = kktViolence[index];
+                }
+            }
+            i = iTemp;
+            if (i == -1 || kktViolatedEntries.size() < 2)
+                break;
+
             double Ei=calE(i);
-            double maxEj=0.0;
-            int maxj=0;  //采用启发式算法，确定和Ei差的绝对值最大的Ej
-            for (j=0; j < alpha.size(); j++) {
-                if (i == j)
+            double maxEj=-1;
+            int maxj=-1;  //采用启发式算法，确定和Ei差的绝对值最大的Ej
+            for (Integer jIndex : kktViolatedEntries) {
+                if (i == jIndex)
                     continue;
-                double Ej = calE(j);
+                double Ej = calE(jIndex);
                 if (Math.abs(Ei - Ej) > maxEj) {
-                    maxj = j;
+                    maxj = jIndex;
                     maxEj = Math.abs(Ei-Ej);
                 }
             }
@@ -93,7 +147,7 @@ public class SupportVectorMachine {
                 H = Math.min(C, C - oldalphai + oldalphaj);
             } else {
                 L = Math.max(0, oldalphai + oldalphaj - C);
-                H = Math.min(0, oldalphai + oldalphaj);
+                H = Math.min(C, oldalphai + oldalphaj);
             }
 
             double eta = 2 * productMatrix.get(i, j) - productMatrix.get(i, i) - productMatrix.get(j, j);
@@ -122,13 +176,17 @@ public class SupportVectorMachine {
                 b = b2;
             else
                 b = (b1 + b2) / 2;
+
+            convergency = convergence();
         }
     }
 
     private void Init() {
         //初始化alpha的权值，应该是全置0或者令alpha为0到C之间的某个随机数
-        //Todo alpha参数还有很多优化可能
-        alpha = new ArrayList<Double>(Collections.nCopies(dataMatrix.getWidth(), 0.0));
+        alpha = new ArrayList<Double>(Collections.nCopies(dataMatrix.getHeight(), 0.0));
+        for(int i = 0; i < alpha.size(); i++) {
+            alpha.set(i,Math.random());
+        }
 
         //初始化b的值，可以考虑随机或者置默认值
         //Todo 后续优化b参数取值
@@ -163,7 +221,7 @@ public class SupportVectorMachine {
         }
     }
 
-    private boolean convergence() {
+    private double convergence() {
         // 采用KKT条件判别是否收敛，在alpha维数过多的时候会过于缓慢
         /*
         * KKT条件如下：
@@ -171,17 +229,24 @@ public class SupportVectorMachine {
         * yi*Ei ==0 when 0<alpha<C
         * yi*Ei <=0 when alpha = C
         */
+        /*
+        int count = 0;
+        int total = alpha.size();
         for (int i = 0;i<alpha.size();i++) {
-            if ((data.getLabelMatrix().get(i,0)*calE(i)>=0 && Math.abs(alpha.get(i))<tol)
+            if ((labelMatrix.get(i,0)*calE(i)>=0 && Math.abs(alpha.get(i))<tol)
                 ||(Math.abs(data.getLabelMatrix().get(i,0)*calE(i))<tol && alpha.get(i)>0 && alpha.get(i)-C < 0)
                 ||(data.getLabelMatrix().get(i,0)*calE(i)>=0 && Math.abs(alpha.get(i)-C)<tol )) {
-                continue;
+                count++;
             }
-            else {
-                return false;
-            }
+        }*/
+        double error = -1.0;
+        try {
+            error = Matrix.vectorLength(errorVector.add(new Matrix(errorVector.getHeight(),1, b)));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return true;
+        error  = error / Math.sqrt(errorVector.getHeight());
+        return error;
     }
 
     public int test(Matrix x) {

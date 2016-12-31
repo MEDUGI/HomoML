@@ -6,7 +6,7 @@ import dataInterface.BasicDataProvider;
 import dataInterface.DataProvider;
 import dataInterface.OneNumberSensitiveSemeion;
 import dataInterface.SemeionDataProvider;
-import mlalgorithms.RBFKernel;
+import examples.RBFKernel;
 import mlalgorithms.SupportVectorMachine;
 
 /**
@@ -31,7 +31,7 @@ public class Test {
                 semeionDataProvider.getLabelMatrix().subMatrix(0, trainNumber, 1, total)
         );
 
-        SupportVectorMachine supportVectorMachine = new SupportVectorMachine(trainDataProvider, new RBFKernel(5.5));
+        SupportVectorMachine supportVectorMachine = new SupportVectorMachine(trainDataProvider, new RBFKernel(1.0/100));
         supportVectorMachine.train();
         double[][] testResult = new double[testNumber][1];
         for(int i = 0; i < testNumber; i++) {
