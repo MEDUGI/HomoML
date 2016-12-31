@@ -30,7 +30,7 @@ public class Matrix {
 	public Matrix(int m, int n) {
 		this.m = m;
 		this.n = n;
-		this.data = new double[m][n];		
+ 		this.data = new double[m][n];
 	}	
 	public Matrix(Matrix mat) {
 		m = mat.m;

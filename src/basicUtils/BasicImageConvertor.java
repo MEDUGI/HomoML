@@ -26,4 +26,12 @@ public class BasicImageConvertor implements ImageConvertor{
         }
         return new Matrix(image);
     }
+
+    public Matrix toRowMatrix(Matrix imageMatrix) {
+        double[][] image = imageMatrix.getData();
+        double[][] row = new double[1][height*width];
+        for(int i = 0; i < height*width; i++)
+            row[0][i] = image[i / width][i % width];
+        return new Matrix(row);
+    }
 }
