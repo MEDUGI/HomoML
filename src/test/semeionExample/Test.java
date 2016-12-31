@@ -15,7 +15,8 @@ import mlalgorithms.SupportVectorMachine;
  */
 public class Test {
     public static void main(String[] args) {
-        SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("C:\\Users\\zxx_1\\Desktop\\semeion.data", new ContourExtractor(16,16),5);
+        System.out.println(System.getProperty("user.dir"));
+        SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16,16),5);
 
         Matrix fullDataMatrix = semeionDataProvider.getDataMatrix();
         int total = fullDataMatrix.getHeight();

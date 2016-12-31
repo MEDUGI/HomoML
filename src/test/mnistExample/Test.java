@@ -10,10 +10,10 @@ import dataInterface.SemeionDataProvider;
  */
 public class Test {
     public static void main(String[] args) {
-        MnistDataProvider mnistTrainData = new MnistDataProvider("C:\\Users\\zxx_1\\Desktop\\train-images.idx3-ubyte",
-                "C:\\Users\\zxx_1\\Desktop\\train-labels.idx1-ubyte");
-        MnistDataProvider mnistTestData = new MnistDataProvider("C:\\Users\\zxx_1\\Desktop\\t10k-images.idx3-ubyte",
-                "C:\\Users\\zxx_1\\Desktop\\t10k-labels.idx1-ubyte");
+        MnistDataProvider mnistTrainData = new MnistDataProvider("data\\train-images.idx3-ubyte",
+                "data\\train-labels.idx1-ubyte");
+        MnistDataProvider mnistTestData = new MnistDataProvider("data\\t10k-images.idx3-ubyte",
+                "data\\t10k-labels.idx1-ubyte");
         System.out.println(1+1);
     }
 }
