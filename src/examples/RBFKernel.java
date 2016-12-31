@@ -1,12 +1,13 @@
-package mlalgorithms;
+package examples;
 import java.lang.Math;
 import basicUtils.Mathtools;
 import basicUtils.Matrix;
+import mlalgorithms.KernelFunction;
 
 /**
  * Created by 李沅泽 on 2016/12/28.
  */
-public class RBFKernel implements KernelFunction{
+public class RBFKernel implements KernelFunction {
     private double gamma=0.0;
 
     public RBFKernel() {
