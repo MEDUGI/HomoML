@@ -43,7 +43,7 @@ public class Matrix {
 	
 	public Matrix add(Matrix b) {
 		if (b.n != n || b.m != m) return null;
-		Matrix ans = new Matrix(n,m,0);
+		Matrix ans = new Matrix(m,n,0);
 		for (int i = 0; i < m; i ++) 
 			for (int j = 0; j < n; j ++) 
 				ans.data[i][j] = data[i][j] + b.data[i][j];

@@ -22,6 +22,7 @@ public class Test {
         double sampleRate = 0.5;
         int trainNumber = (int)(total * sampleRate);
         int testNumber = trainNumber - 1;
+
         DataProvider trainDataProvider = new BasicDataProvider(fullDataMatrix.subMatrix(0, 0,
                 fullDataMatrix.getWidth(), trainNumber), semeionDataProvider.getLabelMatrix().subMatrix(0, 0,
                 1, trainNumber));

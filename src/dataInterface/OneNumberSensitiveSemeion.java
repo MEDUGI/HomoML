@@ -31,14 +31,14 @@ public class OneNumberSensitiveSemeion extends SemeionDataProvider{
     @Override
     protected void readFromFile(String filepath) {
         super.readFromFile(filepath);
-        double[][] data = dataMatrix.getData();
-        for(int i = 0; i < dataMatrix.getHeight(); i++)
-            for(int j = 0; j < dataMatrix.getWidth(); j++) {
+        double[][] data = labelMatrix.getData();
+        for(int i = 0; i < labelMatrix.getHeight(); i++)
+            for(int j = 0; j < labelMatrix.getWidth(); j++) {
                 if (Math.abs(data[i][j]- digit)<eps)
                     data[i][j] = 1;
                 else
                     data[i][j] = -1;
             }
-        dataMatrix = new Matrix(data);
+        labelMatrix = new Matrix(data);
     }
 }
