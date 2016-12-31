@@ -12,9 +12,10 @@ import java.util.ArrayList;
  * 尝试在类内部赋予方法的写法。
  */
 public class CNNetwork {
-    ImageDataProvider imgs;
+    private ImageDataProvider imgs;
     private ArrayList<Layer> layers;
-    Matrix result;
+    private double tol = 0.001;
+
     public CNNetwork() {
         layers = new ArrayList<Layer>();
     }
@@ -28,26 +29,42 @@ public class CNNetwork {
      * 首先检查layers不为空。
      * 然后开始前向循环。
      */
-    public int train() {
+    public int train() throws Exception{
         int length = layers.size();
-        Matrix output;
+        Matrix output = new Matrix();
         Matrix input;
-        boolean isConvergence = false;
+        Matrix error;
+        boolean isContinued = true;
         int rank = 0;
 
         if (layers.size() == 0) {
             System.err.println("CNNetwork.java : layers为空，无法训练。");
             return -1;
         }
-        while (!isConvergence) {
-            input = imgs.toImageMatrix(imgs.getDataMatrix().get(rank));
+        while (isContinued) {
+            input = imgs.getDataMatrix().get(rank);
             for (int i = 0; i < length; i++) {
                 Layer temp = layers.get(i);
                 output = temp.forwardPropagation(input);
                 input = output;
             }
+            error = output.sub(imgs.getLabelMatrix());
+            for (int i = length-1;i >=0; i--) {
+                Layer temp = layers.get(i);
+                error = temp.backPropagation(error);
+            }
+            isContinued = !isConvergence();
         }
         return 0;
+    }
+
+    private boolean isConvergence() {
+        for (int i = 0; i < layers.size();i++) {
+            if (layers.get(i).isConvergence() > tol) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public int insertLayer(Layer layer) {
@@ -66,5 +83,21 @@ public class CNNetwork {
 
     public ArrayList<Layer> getLayers() {
         return layers;
+    }
+
+    public double getTol() {
+        return tol;
+    }
+
+    public void setTol(double tol) {
+        this.tol = tol;
+    }
+
+    public ImageDataProvider getImgs() {
+        return imgs;
+    }
+
+    public void setImgs(ImageDataProvider imgs) {
+        this.imgs = imgs;
     }
 }
