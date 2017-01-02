@@ -6,14 +6,15 @@ import basicUtils.Matrix;
  * Created by 李沅泽 on 2017/1/2.
  */
 public class FullConnectionLayer implements Layer{
-    private int inputNum;
-    private int outputNum;
-    private double eta = 0.5;
-    private ActivationFunction acFunc;
-    private Matrix weights;
-    private Matrix bias;
-    private Matrix output;
-    private Matrix errors;
+    int inputNum;
+    int outputNum;
+    double eta = 0.5;
+    ActivationFunction acFunc;
+    Matrix weights;
+    Matrix bias;
+    Matrix output;
+    Matrix input;
+    double convergency;
 
     FullConnectionLayer(int inputNum,int outputNum, ActivationFunction func) {
         this.inputNum = inputNum;
@@ -25,9 +26,11 @@ public class FullConnectionLayer implements Layer{
     }
 
     public double isConvergence() {
-
+        return convergency;
     }
+
     public Matrix forwardPropagation(Matrix input) throws Exception{
+        this.input = input.copy();
         output = new Matrix(1,outputNum);
         if (input.getWidth() != inputNum) {
             Exception e = new Exception("全连接层输入参数不匹配！");
@@ -45,8 +48,9 @@ public class FullConnectionLayer implements Layer{
         return output;
     }
     public Matrix backPropagation(Matrix err){
-        errors = new Matrix(1, inputNum);
+        Matrix errors = new Matrix(1, inputNum);
         Matrix thetas = new Matrix(1, outputNum);
+        convergency = 0.0;
         for (int i = 0;i < outputNum;i++) {
             thetas.set(1,i,acFunc.derivation(errors.get(1,i)));
         }
@@ -54,10 +58,15 @@ public class FullConnectionLayer implements Layer{
             double temp = 0.0;
             for (int j = 0;j < outputNum;i++) {
                 temp += thetas.get(1,j) * weights.get(i,j);
+                //update weights
+                double theta = eta*thetas.get(1,j)*input.get(1,i);
+                convergency += theta;
+                weights.set(i,j,weights.get(i,j)-theta);
             }
             errors.set(1,i,temp);
         }
-        return errors.copy();
+        convergency = convergency / (inputNum * outputNum);
+        return errors;
     }
 
     public void changeEta(int param) {
