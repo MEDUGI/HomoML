@@ -1,82 +1,82 @@
-**çºªè¦**
+**¼ÍÒª**
 
-ç®—æ³•ï¼š SVM, å·ç§¯ç¥žç»ç½‘ç»œ
+Ëã·¨£º SVM, ¾í»ýÉñ¾­ÍøÂç
 
-SVM --> åæ ‡ä¸‹é™ï¼ŒKernelå‡½æ•°é›†ï¼ˆæ˜¯å¦èƒ½å®žçŽ°ç”¨æˆ·è‡ªå·±å®šä¹‰çš„Kernelç±»ï¼‰
+SVM --> ×ø±êÏÂ½µ£¬Kernelº¯Êý¼¯£¨ÊÇ·ñÄÜÊµÏÖÓÃ»§×Ô¼º¶¨ÒåµÄKernelÀà£©
 
-CNN --> å·ç§¯æ“ä½œï¼ˆä¸åŒå·ç§¯æ ¸ï¼ŒåŒæ ·çš„ï¼Œæ˜¯å¦èƒ½å®žçŽ°åŸºæœ¬çš„æ‰©å±•ï¼‰ï¼Œå‰å‘ä¼ æ’­ï¼ŒåŽå‘ä¼ æ’­ï¼Œå…¨è¿žæŽ¥ï¼ˆåŸºæœ¬çš„ç¥žç»ç½‘ç»œï¼Œæ„ŸçŸ¥å™¨ï¼‰,éžçº¿æ€§è¾“å‡ºï¼ˆsigmodç­‰å‡½æ•°ï¼ŒåŒæ ·çš„æ˜¯å¦å¯ä»¥æ‹“å±•ï¼‰
+CNN --> ¾í»ý²Ù×÷£¨²»Í¬¾í»ýºË£¬Í¬ÑùµÄ£¬ÊÇ·ñÄÜÊµÏÖ»ù±¾µÄÀ©Õ¹£©£¬Ç°Ïò´«²¥£¬ºóÏò´«²¥£¬È«Á¬½Ó£¨»ù±¾µÄÉñ¾­ÍøÂç£¬¸ÐÖªÆ÷£©,·ÇÏßÐÔÊä³ö£¨sigmodµÈº¯Êý£¬Í¬ÑùµÄÊÇ·ñ¿ÉÒÔÍØÕ¹£©
 
-åŸºæœ¬æ•°å­¦å·¥å…·å®žçŽ°
->* çŸ©é˜µç±»ï¼ˆå®šä¹‰ï¼Œæ•°æ®ç»“æž„ï¼ŒåŸºæœ¬æ“ä½œâ€”â€”åŠ ã€å‡ã€ä¹˜ã€row reductionï¼Œdeterminantï¼ŒSVDï¼Œï¼ˆPCAï¼‰â€”â€”éƒ¨åˆ†å¤šçº¿ç¨‹ï¼‰
->* æ¢¯åº¦ä¸‹é™ï¼ˆå°è¯•æ‰¾åˆ°ç»Ÿä¸€çš„æœ€å°çš„å‡½æ•°ï¼Œå¦åˆ™èˆå¼ƒï¼Œå¤šçº¿ç¨‹æ“ä½œï¼‰
->* å·ç§¯æ“ä½œï¼ˆå¤šçº¿ç¨‹çš„ï¼‰
->* Kernelå‡½æ•°æ±‚å€¼ï¼ˆå¤šçº¿ç¨‹ï¼Œå®žé™…ä¸Šæ˜¯çŸ©é˜µæ“ä½œï¼‰
->* å‰å‘ä¼ æ’­å’Œåå‘ä¼ æ’­ï¼ˆå°è¯•æ‰¾ç»Ÿä¸€çš„æ ¼å¼ï¼Œå¦åˆ™èˆå¼ƒï¼‰
+»ù±¾ÊýÑ§¹¤¾ßÊµÏÖ
+>* ¾ØÕóÀà£¨¶¨Òå£¬Êý¾Ý½á¹¹£¬»ù±¾²Ù×÷¡ª¡ª¼Ó¡¢¼õ¡¢³Ë¡¢row reduction£¬determinant£¬SVD£¬£¨PCA£©¡ª¡ª²¿·Ö¶àÏß³Ì£©
+>* ÌÝ¶ÈÏÂ½µ£¨³¢ÊÔÕÒµ½Í³Ò»µÄ×îÐ¡µÄº¯Êý£¬·ñÔòÉáÆú£¬¶àÏß³Ì²Ù×÷£©
+>* ¾í»ý²Ù×÷£¨¶àÏß³ÌµÄ£©
+>* Kernelº¯ÊýÇóÖµ£¨¶àÏß³Ì£¬Êµ¼ÊÉÏÊÇ¾ØÕó²Ù×÷£©
+>* Ç°Ïò´«²¥ºÍ·´Ïò´«²¥£¨³¢ÊÔÕÒÍ³Ò»µÄ¸ñÊ½£¬·ñÔòÉáÆú£©
 
-æˆ‘ä»¬è¦åšçš„äº‹æƒ…ï¼š
->1. å®žçŽ°ç®—æ³•åº“ç»Ÿä¸€çš„è¾“å…¥è¾“å‡ºæŽ¥å£ã€‚
->2. ç®—æ³•åº“å†…éƒ¨çš„å‡½æ•°å¯ä»¥å•ç‹¬è¢«è°ƒç”¨ï¼Œä¹Ÿå¯ä»¥ç›¸äº’å…±äº«å˜é‡ã€‚
->3. éœ€è¦åˆ©ç”¨ç®—æ³•åº“å®žçŽ°ä¸€ä¸ªå®žä¾‹ï¼Œå€™é€‰ä¸ºCNNæ‰‹å†™è¯†åˆ«ã€éªŒè¯ç è¯†åˆ«
+ÎÒÃÇÒª×öµÄÊÂÇé£º
+>1. ÊµÏÖËã·¨¿âÍ³Ò»µÄÊäÈëÊä³ö½Ó¿Ú¡£
+>2. Ëã·¨¿âÄÚ²¿µÄº¯Êý¿ÉÒÔµ¥¶À±»µ÷ÓÃ£¬Ò²¿ÉÒÔÏà»¥¹²Ïí±äÁ¿¡£
+>3. ÐèÒªÀûÓÃËã·¨¿âÊµÏÖÒ»¸öÊµÀý£¬ºòÑ¡ÎªCNNÊÖÐ´Ê¶±ð¡¢ÑéÖ¤ÂëÊ¶±ð
 
-åˆ†å·¥ï¼š
->1. åº“å†…å¤–çš„æ²Ÿé€šï¼Œç»Ÿä¸€çš„è¾“å…¥è¾“å‡ºæŽ¥å£ï¼Œè°ƒç”¨GPUå’Œå¤šçº¿ç¨‹ã€å¤šè¿›ç¨‹çš„æŽ¥å£ã€‚   --zxx
->2. åŸºæœ¬æ•°å­¦å·¥å…·å®žçŽ°part1ï¼šçŸ©é˜µç±»å’ŒçŸ©é˜µåŸºæœ¬æ“ä½œï¼Œkernelæ ¸æŠ½è±¡å®žçŽ°ï¼Œå·ç§¯æ“ä½œï¼Œå·ç§¯æ ¸ã€‚    --tmy
->3. åŸºæœ¬æ•°å­¦å·¥å…·å®žçŽ°part2ï¼šæœºå™¨å­¦ä¹ åŸºæœ¬ç®—æ³•ï¼ˆCNNå’ŒSVMï¼‰ï¼Œæ¢¯åº¦ä¸‹é™ï¼Œåæ ‡ä¸‹é™ï¼Œä¼ æ’­ç®—æ³•ã€‚    --lyz
->4. åˆ©ç”¨ç®—æ³•åº“å®žçŽ°ä¸€ä¸ªå®žä¾‹ã€‚è‡ªå·±é€‰æ‰‹å†™è¯†åˆ«å’ŒéªŒè¯ç ã€‚æ‰‹å†™è¯†åˆ«éœ€è¦GUIï¼ˆå®žæ—¶ä¼ è¾“æ•°æ®ï¼Œå¤„ç†ç”»ç¬”çš„ç²—ç»†ï¼Œå°†å›¾ç‰‡çš„è¾¹ç¼˜å¤„ç†å¥½ï¼Œå¾—åˆ°è¾ƒå¥½çš„æ ·ä¾‹ï¼Œé¿å…ç®—æ³•å› ä¸ºæ ·ä¾‹çš„é—®é¢˜å¯¼è‡´è¯¯å·®ï¼‰ï¼ŒéªŒè¯ç éªŒè¯éœ€è¦ï¼ˆè‡ªå·±ç”ŸæˆéªŒè¯ç ç®—æ³•ï¼ŒGUIå±•ç¤ºéªŒè¯ç ï¼Œå±•ç¤ºçš„æ—¶å€™ç”ŸæˆéªŒè¯ç å¹¶åŒæ—¶è¾“å‡ºåˆ¤æ–­ç»“æžœï¼‰
+·Ö¹¤£º
+>1. ¿âÄÚÍâµÄ¹µÍ¨£¬Í³Ò»µÄÊäÈëÊä³ö½Ó¿Ú£¬µ÷ÓÃGPUºÍ¶àÏß³Ì¡¢¶à½ø³ÌµÄ½Ó¿Ú¡£   --zxx
+>2. »ù±¾ÊýÑ§¹¤¾ßÊµÏÖpart1£º¾ØÕóÀàºÍ¾ØÕó»ù±¾²Ù×÷£¬kernelºË³éÏóÊµÏÖ£¬¾í»ý²Ù×÷£¬¾í»ýºË¡£    --tmy
+>3. »ù±¾ÊýÑ§¹¤¾ßÊµÏÖpart2£º»úÆ÷Ñ§Ï°»ù±¾Ëã·¨£¨CNNºÍSVM£©£¬ÌÝ¶ÈÏÂ½µ£¬×ø±êÏÂ½µ£¬´«²¥Ëã·¨¡£    --lyz
+>4. ÀûÓÃËã·¨¿âÊµÏÖÒ»¸öÊµÀý¡£×Ô¼ºÑ¡ÊÖÐ´Ê¶±ðºÍÑéÖ¤Âë¡£ÊÖÐ´Ê¶±ðÐèÒªGUI£¨ÊµÊ±´«ÊäÊý¾Ý£¬´¦Àí»­±ÊµÄ´ÖÏ¸£¬½«Í¼Æ¬µÄ±ßÔµ´¦ÀíºÃ£¬µÃµ½½ÏºÃµÄÑùÀý£¬±ÜÃâËã·¨ÒòÎªÑùÀýµÄÎÊÌâµ¼ÖÂÎó²î£©£¬ÑéÖ¤ÂëÑéÖ¤ÐèÒª£¨×Ô¼ºÉú³ÉÑéÖ¤ÂëËã·¨£¬GUIÕ¹Ê¾ÑéÖ¤Âë£¬Õ¹Ê¾µÄÊ±ºòÉú³ÉÑéÖ¤Âë²¢Í¬Ê±Êä³öÅÐ¶Ï½á¹û£©
   -- zqy
 
-Matrixç±»
->* æž„é€ å‡½æ•°ï¼šdouble[][] data
->* æž„é€ å‡½æ•°: int m, int n, double initial.
->* åŠ æ³•: Matrix Matrix.add(Matrix)
->* å‡æ³•ï¼š Matrix Matrix.sub(Matrix)
->* ä¹˜æ³•: Matrix Matrix.multiply(Matrix) throws Exception
->* æ•°ä¹˜: Matrix Matrix.multiply(double scalar)
+MatrixÀà
+>* ¹¹Ôìº¯Êý£ºdouble[][] data
+>* ¹¹Ôìº¯Êý: int m, int n, double initial.
+>* ¼Ó·¨: Matrix Matrix.add(Matrix)
+>* ¼õ·¨£º Matrix Matrix.sub(Matrix)
+>* ³Ë·¨: Matrix Matrix.multiply(Matrix) throws Exception
+>* Êý³Ë: Matrix Matrix.multiply(double scalar)
 >* row reduction: Matrix Matrix.reduce()
 >* linearSolve: Matrix Matrix.linearSolve(Matrix y): return null when no solutions
 >* leastSquareSolve: Matrix Matrix.leastSquareSolve(Matrix y): return exacts solution when possible, apporx. solution otherwise.
->* è½¬ç½®: Matrix matrix.reverse()
+>* ×ªÖÃ: Matrix matrix.reverse()
 >* determinant: double Matrix.determinant() throws Exception
->* æ±‚é€†ï¼š Matrix Matrix.inverse() throws Exception
->* SVD: Matrix[] Matrix.SVD() throws Exception. The returned list contains 3 entries, represents U Î£ and V'
+>* ÇóÄæ£º Matrix Matrix.inverse() throws Exception
+>* SVD: Matrix[] Matrix.SVD() throws Exception. The returned list contains 3 entries, represents U ¦² and V'
 >* copy: Matrix Matrix.copy()
 >* subMatrix: Matrix Matrix.subMatrix(int lx, int ly, int rx, int ry) assert(rx > lx; ry > ly) throws Exception
 >* columnUnion: Matrix Matrix.columnUnion(Matrix rhm) throws Exception
 
-MatrixExceptionç±» extends Exception
+MatrixExceptionÀà extends Exception
 
-PCAç±»
->* æž„é€ å‡½æ•°ï¼šMatrix dataMatrix, int newDimension
->* åŽ‹ç¼©æ•°æ®ï¼šMatrix PCA.encode(Matirx) throws Exception
+PCAÀà
+>* ¹¹Ôìº¯Êý£ºMatrix dataMatrix, int newDimension
+>* Ñ¹ËõÊý¾Ý£ºMatrix PCA.encode(Matirx) throws Exception
 
-ConvolutionFunctionæŽ¥å£
+ConvolutionFunction½Ó¿Ú
 >* Matrix convolutionOf(Matrix m)
 
-PoolingFunctionæŽ¥å£
+PoolingFunction½Ó¿Ú
 >* Matrix poolingOf(Matrix m)
 
-ConvolutionLayerå®žçŽ°ConvolutionFunctionä¸ŽPoolingFunction
+ConvolutionLayerÊµÏÖConvolutionFunctionÓëPoolingFunction
 >* Matrix dataMatrix;
 >* Matrix weightVector;
 >* Matrix outputOf(Matrix inputVector);
 >* getter & setter
 
-FullConnectedLayerç±»
+FullConnectedLayerÀà
 >* Matrix weightVector;
 >* getter & setter
 
-KernelFunctionæŽ¥å£
+KernelFunction½Ó¿Ú
 >* double kernelOf(Matrix x1, Matrix x2) throws Exception
  
-DataProvideræŽ¥å£
+DataProvider½Ó¿Ú
 >* Matrix dataMatrix();
 >* Matrix labelMatrix();
 >* boolean isReady();
 
-ClassificationMethodæžšä¸¾ç±»ï¼š
+ClassificationMethodÃ¶¾ÙÀà£º
 >* {KSVM, CNN}
 
-Classifierçˆ¶ç±»ï¼š
+Classifier¸¸Àà£º
 >* protected ClassificationMethod classificationMethod
 >* protected boolean isTrained
 >* protected Map<String, Object> setting;
@@ -84,7 +84,7 @@ Classifierçˆ¶ç±»ï¼š
 >* public double classify(Matrix dataVector)
 >* getter & setter
 
-SvmClassifierç»§æ‰¿Classifier
+SvmClassifier¼Ì³ÐClassifier
 >* protected KernelFunction kernelFunction;
 >* protected Matrix supportVectors;
 >* protected Matrix alphaVector;
@@ -92,5 +92,5 @@ SvmClassifierç»§æ‰¿Classifier
 >* protected boolean applySetting();
 >* getter & setter
 
-CnnClassifierç»§æ‰¿Classifier
+CnnClassifier¼Ì³ÐClassifier
 >* protected ArrayList<ConvolutionLayer> convolutionLayers

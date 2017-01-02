@@ -5,7 +5,6 @@ package basicUtils;
  */
 public class Mathtools {
     public static double getL2(Matrix x,Matrix y) {
-        //ToDo 得到L2范数
-        return 0.0;
+        return x.sub(y).reverse().getNorm2Vector();
     }
 }
