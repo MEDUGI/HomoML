@@ -62,6 +62,8 @@ public class FullConnectionLayer implements Layer{
                 double theta = eta*thetas.get(1,j)*input.get(1,i);
                 convergency += theta;
                 weights.set(i,j,weights.get(i,j)-theta);
+                //update bias
+                bias.set(1,j,bias.get(1,j)+eta*thetas.get(1,j));
             }
             errors.set(1,i,temp);
         }

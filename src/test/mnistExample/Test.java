@@ -14,6 +14,6 @@ public class Test {
                 "data\\train-labels.idx1-ubyte");
         MnistDataProvider mnistTestData = new MnistDataProvider("data\\t10k-images.idx3-ubyte",
                 "data\\t10k-labels.idx1-ubyte");
-        System.out.println(1+1);
+
     }
 }

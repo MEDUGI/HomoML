@@ -1,8 +1,10 @@
 package mlalgorithms;
 
 import basicUtils.Matrix;
+import dataInterface.DataProvider;
 import dataInterface.ImageDataProvider;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 /**
@@ -12,7 +14,7 @@ import java.util.ArrayList;
  * 尝试在类内部赋予方法的写法。
  */
 public class CNNetwork {
-    private ImageDataProvider imgs;
+    private DataProvider imgs;
     private ArrayList<Layer> layers;
     private double tol = 0.001;
 
@@ -58,6 +60,17 @@ public class CNNetwork {
         return 0;
     }
 
+    public Matrix test(Matrix input) throws Exception{
+        int length = layers.size();
+        Matrix output = new Matrix();
+        for (int i = 0;i<length;i++) {
+            Layer temp = layers.get(i);
+            output = temp.forwardPropagation(input);
+            input = output;
+        }
+        return output.copy();
+    }
+
     private boolean isConvergence() {
         for (int i = 0; i < layers.size();i++) {
             if (layers.get(i).isConvergence() > tol) {
@@ -93,11 +106,11 @@ public class CNNetwork {
         this.tol = tol;
     }
 
-    public ImageDataProvider getImgs() {
+    public DataProvider getImgs() {
         return imgs;
     }
 
-    public void setImgs(ImageDataProvider imgs) {
+    public void setImgs(DataProvider imgs) {
         this.imgs = imgs;
     }
 }
