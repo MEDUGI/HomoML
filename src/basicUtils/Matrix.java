@@ -1,6 +1,6 @@
-package testMatrix;
+package basicUtils;
 
-import testMatrix.Matrix;
+import basicUtils.Matrix;
 
 /**
  * Created by tmy on 2016/12/10.
