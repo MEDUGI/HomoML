@@ -16,7 +16,7 @@ public class FullConnectionLayer implements Layer{
     Matrix input;
     double convergency;
 
-    FullConnectionLayer(int inputNum,int outputNum, ActivationFunction func) {
+    public FullConnectionLayer(int inputNum, int outputNum, ActivationFunction func) {
         this.inputNum = inputNum;
         this.outputNum = outputNum;
         acFunc = func;
