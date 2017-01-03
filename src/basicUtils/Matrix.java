@@ -1,6 +1,5 @@
-package testMatrix;
+package basicUtils;
 
-import testMatrix.Matrix;
 
 /**
  * Created by tmy on 2016/12/10.
@@ -84,6 +83,14 @@ public class Matrix {
 				ans.data[i][j] *= x;
 		return ans;
 	}	
+	public Matrix dotProduction(Matrix B) {
+		if (B.n != n || B.m != m) return null;
+		Matrix ans = new Matrix(m,n);
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++)
+				ans.data[i][j] = data[i][j]*B.data[i][j];
+		return ans;
+	}
 	public Matrix reverse() {
 		Matrix y = new Matrix(n,m);
 		for (int i = 0; i < m; i ++) 
@@ -475,6 +482,17 @@ public class Matrix {
 		}
 	}
 	
+	public Matrix rot180() {
+		Matrix B = new Matrix(m,n);
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++) {
+				int nrank = (n*m-1) - (n*i+j);
+				B.data[nrank/n][nrank%n] = data[i][j];
+			}
+		//setData(B.data);		
+		return B;
+	}
+	
 	public Matrix subMatrix(int left, int top, int right, int bottom) {
 		int mm = bottom-top, nn = right-left;
 	    double[][] newdata = new double[mm][nn];
@@ -483,7 +501,20 @@ public class Matrix {
 	    		newdata[i-top][j-left] = data[i][j];
 	    return new Matrix(newdata);
 	}
-
+	
+	public double getSum() {
+		double sum = 0.0;
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++)
+				sum += data[i][j];
+		return sum;
+	}
+	public boolean set(int x, double[] row) {
+		if (row.length != n) return false;
+		for (int i = 0; i < n; i++)
+			data[x][i] = row[i];
+		return true;
+	}
 	public double get(int x, int y) {
 		return data[x][y];
 	}	
@@ -512,7 +543,12 @@ public class Matrix {
 	public void setWidth(int width) {
 		n = width;
 	}
-
+	private void setData(double[][] data) {
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++)
+				this.data[i][j] = data[i][j];
+	}
+	
 	public static double vectorLength(Matrix vector) throws Exception {
 	    if (vector.n != 1)
 	        throw new Exception("The inputed matrix is not a vector");
