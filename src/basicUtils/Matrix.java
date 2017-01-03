@@ -1,7 +1,5 @@
 package basicUtils;
 
-import basicUtils.Matrix;
-
 /**
  * Created by tmy on 2016/12/10.
  */
@@ -84,6 +82,14 @@ public class Matrix {
 				ans.data[i][j] *= x;
 		return ans;
 	}	
+	public Matrix dotProduction(Matrix B) {
+		if (B.n != n || B.m != m) return null;
+		Matrix ans = new Matrix(m,n);
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++)
+				ans.data[i][j] = data[i][j]*B.data[i][j];
+		return ans;
+	}
 	public Matrix reverse() {
 		Matrix y = new Matrix(n,m);
 		for (int i = 0; i < m; i ++) 
@@ -218,21 +224,22 @@ public class Matrix {
 	private Matrix JacobiEigenvalue(int K, double dbEps, Matrix U) {		
 		Matrix A = this.copy();
 		// initialize U (the Matrix for eigenvectors) 
-		for (int i = 0; i < A.m; i++) {
+		for (int i = 0; i < U.getHeight(); i++) {
 			U.data[i][i] = 1.0;
-			for (int j = 0; j < A.n; j++)
+			for (int j = 0; j < U.getWidth(); j++)
 				if (i != j)
 					U.data[i][j] = 0.0;
 		}		
 		
 		int MAXCOUNT = 1000;
-		for (int nCount = 0; nCount < K; nCount ++) {
+		for (int nCount = 0; nCount < MAXCOUNT; nCount ++) {
 			// find the max data in matrix not on the diagonal
 			int p = 0;
-			int q = 0;
+			int q = 1;
 			double maxdata = 0.0;
 			for (int i = 0; i < A.m; i ++)
 				for (int j = 0; j < A.n; j++)
+					if (i != j)
 					if (cmp(Math.abs(A.data[i][j]), maxdata) > 0) {
 						p = i;
 						q = j;
@@ -240,9 +247,8 @@ public class Matrix {
 					}
 			// judge ending 
 			if (cmp(maxdata, dbEps) < 0) break;
-			if (nCount > MAXCOUNT) break;
+			//if (nCount > MAXCOUNT) break;
 			
-			nCount ++;
 			
 			double App = A.data[p][p];
 			double Apq = A.data[p][q];
@@ -254,8 +260,10 @@ public class Matrix {
 			double sin2Theta = Math.sin(2*Theta);
 			double cos2Theta = Math.cos(2*Theta);
 			// calculate the new iteration matrix
-			A.data[p][p] = App*cosTheta*cosTheta + Aqq*sinTheta*sinTheta + 2*Apq*cosTheta*sinTheta;
-			A.data[q][q] = App*sinTheta*sinTheta + Aqq*cosTheta*cosTheta - 2*Apq*cosTheta*sinTheta;
+			A.data[p][p] = App*cosTheta*cosTheta + Aqq*sinTheta*sinTheta + 
+					2*Apq*cosTheta*sinTheta;
+			A.data[q][q] = App*sinTheta*sinTheta + Aqq*cosTheta*cosTheta - 
+					2*Apq*cosTheta*sinTheta;
 			A.data[p][q] = 0.5*(Aqq-App)*sin2Theta + Apq*cos2Theta;
 			A.data[q][p] = A.data[p][q];
 			for (int j = 0; j < A.n; j ++)
@@ -282,7 +290,7 @@ public class Matrix {
 		}
 		
 		// sort eigenvalue
-		double[] eigenvalue = new double[K];
+		double[] eigenvalue = new double[A.m];
 		for (int i = 0; i < A.m; i++)
 			eigenvalue[i] = A.data[i][i];
 		sort(eigenvalue, 0, K-1, U);
@@ -328,12 +336,19 @@ public class Matrix {
 			A.data[i][b] = temp;
 		}
 	}
-	public Matrix getEigenvalue(int K) {
+	public Matrix getEigenvalue(int K, Matrix eigenvectors) {
 		if (n != m) return null;
-		if (K == 0 || K > n) K = n;  
-		Matrix eigenvectors = new Matrix(K,K);
-		Matrix eigenvalue = JacobiEigenvalue(K, 0.1, eigenvectors);
-		
+		if (K == 0 || K > n) K = n;		
+		Matrix U = new Matrix(m, n);
+		Matrix D = JacobiEigenvalue(K, 0.01, U);
+		for (int i = 0; i < eigenvectors.getHeight(); i ++)
+			for (int j = 0; j < eigenvectors.getWidth(); j++)
+				eigenvectors.data[i][j] = U.data[i][j];
+		Matrix eigenvalue = new Matrix(D.n, 1);
+		for (int i = 0; i < D.n; i++)
+			eigenvalue.data[i][0] = D.data[i][i];
+		//for (int j = 0; j < U.n; j++)
+		//	eigenvectors[j] = U.getLine(j);
 		eigenvectors.print();
 		System.out.println("eigenvalue: ");
 		eigenvalue.print();
@@ -341,15 +356,25 @@ public class Matrix {
 	}
 	
 	public Matrix[] svd(int K) throws Exception {
+		if (K > n) K = n;
 		Matrix A = this.copy();
 		Matrix AT = A.reverse();
 		Matrix W = A.multiply(AT);
-		
-		for (int col = 0; col < K; col++) {
-			
+		Matrix V = new Matrix(n,K);
+		Matrix lamda = W.getEigenvalue(K, V);
+		Matrix sigma = new Matrix(K, K, 0);
+		double[][] newdata = new double[A.m][K];
+		for (int i = 0; i < K; i++) {
+			Matrix mulity = A.multiply(V.getLine(i));
+			sigma.data[i][i] = Math.sqrt(lamda.data[i][0]);
+			for (int j = 0; j < A.m; j++)
+				newdata[j][i] = mulity.data[j][0] * sigma.data[i][i];
 		}
-		
+		Matrix U = new Matrix(newdata);
 		Matrix[] ans = new Matrix[3];
+		ans[0] = U;
+		ans[1] = sigma;
+		ans[2] = lamda;
 		return ans;
 	}
 	
@@ -475,6 +500,17 @@ public class Matrix {
 		}
 	}
 	
+	public Matrix rot180() {
+		Matrix B = new Matrix(m,n);
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++) {
+				int nrank = (n*m-1) - (n*i+j);
+				B.data[nrank/n][nrank%n] = data[i][j];
+			}
+		//setData(B.data);		
+		return B;
+	}
+	
 	public Matrix subMatrix(int left, int top, int right, int bottom) {
 		int mm = bottom-top, nn = right-left;
 	    double[][] newdata = new double[mm][nn];
@@ -483,7 +519,20 @@ public class Matrix {
 	    		newdata[i-top][j-left] = data[i][j];
 	    return new Matrix(newdata);
 	}
-
+	
+	public double getSum() {
+		double sum = 0.0;
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++)
+				sum += data[i][j];
+		return sum;
+	}
+	public boolean set(int x, double[] row) {
+		if (row.length != n) return false;
+		for (int i = 0; i < n; i++)
+			data[x][i] = row[i];
+		return true;
+	}
 	public double get(int x, int y) {
 		return data[x][y];
 	}	
@@ -500,6 +549,13 @@ public class Matrix {
 			newrow[0][j] = data[x][j];		
 		return new Matrix(newrow);
 	}
+	// @return Matrix for data[][y]
+	public Matrix getLine(int y) {
+		double[][] newrow = new double[m][1];
+		for (int i = 0; i < m; i++)
+			newrow[i][0] = data[i][y];		
+		return new Matrix(newrow);
+	}
 	public int getHeight() {
 		return m;
 	}
@@ -512,7 +568,12 @@ public class Matrix {
 	public void setWidth(int width) {
 		n = width;
 	}
-
+	private void setData(double[][] data) {
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++)
+				this.data[i][j] = data[i][j];
+	}
+	
 	public static double vectorLength(Matrix vector) throws Exception {
 	    if (vector.n != 1)
 	        throw new Exception("The inputed matrix is not a vector");
