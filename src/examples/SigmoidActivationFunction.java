@@ -1,5 +1,6 @@
 package examples;
 
+import basicUtils.Matrix;
 import mlalgorithms.ActivationFunction;
 import java.lang.Math;
 
@@ -7,7 +8,7 @@ import java.lang.Math;
  * Created by 李沅泽 on 2017/1/3.
  * 作为激活函数构建的样例，实现了对数Sigmoid函数
  */
-public class SigmoidActivationFunction implements ActivationFunction{
+public class SigmoidActivationFunction extends ActivationFunction{
 
     public SigmoidActivationFunction() {
 

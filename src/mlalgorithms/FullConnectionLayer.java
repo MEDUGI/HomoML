@@ -47,7 +47,7 @@ public class FullConnectionLayer implements Layer{
         }
         return output;
     }
-    public Matrix backPropagation(Matrix err){
+    public Matrix backPropagation(Matrix err) throws Exception{
         Matrix errors = new Matrix(1, inputNum);
         Matrix thetas = new Matrix(1, outputNum);
         convergency = 0.0;
