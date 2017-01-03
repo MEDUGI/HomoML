@@ -5,7 +5,7 @@ import mlalgorithms.ActivationFunction;
 /**
  * Created by 李沅泽 on 2017/1/3.
  */
-public class HyperbolaSigmoidActivationFunction  implements ActivationFunction{
+public class HyperbolaSigmoidActivationFunction  extends ActivationFunction{
     public HyperbolaSigmoidActivationFunction() {
 
     }

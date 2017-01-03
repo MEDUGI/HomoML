@@ -41,7 +41,7 @@ public class TestNN {
 
         double[][] testResult = new double[testNumber][1];
         for(int i = 0; i < testNumber; i++) {
-            testResult[i][0] = NN.test(testDataProvider.getDataMatrix().get(i));
+      //      testResult[i][0] = NN.test(testDataProvider.getDataMatrix().get(i));
         }
         System.out.println("The error rate is about " + testErrorRate(new Matrix(testResult), testDataProvider.getLabelMatrix()));
         // TODO: complete the Test on semeion.data
