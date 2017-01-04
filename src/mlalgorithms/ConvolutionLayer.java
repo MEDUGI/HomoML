@@ -44,7 +44,7 @@ public class ConvolutionLayer implements Layer {
     }
 
     public double isConvergence() {
-
+        return 0.0;
     }
 
     public Matrix forwardPropagation(Matrix input) throws Exception {
@@ -106,12 +106,12 @@ public class ConvolutionLayer implements Layer {
             imgs.add(inputConvertor.toImageMatrix(input.get(i)));
         }
         for (int i = 0;i<kernelNum;i++) {
-            Matrix detaWeights = new Matrix(kernelSize,kernelSize,0.0);
+            Matrix dataWeights = new Matrix(kernelSize,kernelSize,0.0);
             ConvKernel tempKernel = new ConvKernel(outputSize, outputConvertor.toImageMatrix(thetas.get(i)).rot180());
             for (int j = 0;j < channelNum;j++) {
-                detaWeights += tempKernel.convolutionValid(imgs.get(j)).rot180();
+                dataWeights = dataWeights.add(tempKernel.convolutionValid(imgs.get(j)).rot180());
             }
-            kernelList.get(i).updateWeights(detaWeights);
+            kernelList.get(i).updateWeights(dataWeights);
         }
         for (int i = 0;i<kernelNum;i++) {
             errorTemp.add(outputConvertor.toRowMatrix(kernelList.get(i).convolutionFullWithRotate(featureMaps.get(i))));

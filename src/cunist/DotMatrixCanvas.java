@@ -6,7 +6,7 @@ import java.awt.*;
  * Created by ZouKaifa on 2015/12/1.
  */
 public class DotMatrixCanvas extends Canvas {
-    private static int width = 28;
+    private static int width = 16;
     private int x;
     private int y;
     private boolean should = false;

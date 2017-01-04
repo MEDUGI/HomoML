@@ -17,7 +17,7 @@ public class Test {
     public static void main(String[] args) {
         SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16,16),5);
 
-        Matrix fullDataMatrix = semeionDataProvider.getDataMatrix();
+        Matrix fullDataMatrix = semeionDataProvider.getFeatureMatrix();
         int total = fullDataMatrix.getHeight();
         double sampleRate = 0.5;
         int trainNumber = (int)(total * sampleRate);
@@ -31,7 +31,7 @@ public class Test {
                 semeionDataProvider.getLabelMatrix().subMatrix(0, trainNumber, 1, total)
         );
 
-        SupportVectorMachine supportVectorMachine = new SupportVectorMachine(trainDataProvider, new RBFKernel(1.0/100));
+        SupportVectorMachine supportVectorMachine = new SupportVectorMachine(trainDataProvider, new RBFKernel(2.73));
         supportVectorMachine.train();
         double[][] testResult = new double[testNumber][1];
         for(int i = 0; i < testNumber; i++) {

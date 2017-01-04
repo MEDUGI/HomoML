@@ -18,10 +18,12 @@ public class ContourExtractor implements FeatureExtractor{
         int dataLength = rawData.getWidth();
         int dataNumber = rawData.getHeight();
         try {
-            Matrix result = transformOnOneEntry(rawData.subMatrix(0, 0, dataLength, 1));
+            Matrix temp = transformOnOneEntry(rawData.subMatrix(0, 0, dataLength, 1));
+            Matrix result = new Matrix(dataNumber, temp.getWidth());
+            result.set(0, temp);
             for (int i = 1; i < dataNumber; i++) {
                 Matrix transferedResult = transformOnOneEntry(rawData.subMatrix(0, i, dataLength, i + 1));
-                result = result.columnUnion(transferedResult);
+                result.set(i, transferedResult);
             }
             return result;
         } catch (Exception e) {
@@ -51,7 +53,7 @@ public class ContourExtractor implements FeatureExtractor{
                     break;
                 count++;
             }
-            featureData[0][k] = count;
+            featureData[0][k] = count / 16.0;
             k++;
             count = 0;
             for(int j = imageWidth-1; j >= 0; j--) {
@@ -59,7 +61,7 @@ public class ContourExtractor implements FeatureExtractor{
                     break;
                 count++;
             }
-            featureData[0][k] = count;
+            featureData[0][k] = count / 16.0;
             k++;
         }
         for(int i = 0; i < imageWidth; i++) {
@@ -69,7 +71,7 @@ public class ContourExtractor implements FeatureExtractor{
                     break;
                 count++;
             }
-            featureData[0][k] = count;
+            featureData[0][k] = count / 16.0;
             k++;
             count = 0;
             for(int j = imageHeight-1; j >= 0; j--) {
@@ -77,7 +79,7 @@ public class ContourExtractor implements FeatureExtractor{
                     break;
                 count++;
             }
-            featureData[0][k] = count;
+            featureData[0][k] = count / 16.0;
             k++;
         }
         if (k != 2 * imageHeight + 2 * imageWidth)

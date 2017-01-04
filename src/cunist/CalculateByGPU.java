@@ -1,5 +1,6 @@
 package cunist;
 
+import basicUtils.BasicImageConvertor;
 import basicUtils.ContourExtractor;
 import basicUtils.Matrix;
 import dataInterface.BasicDataProvider;
@@ -17,10 +18,16 @@ public class CalculateByGPU {
     public native int inference(byte[] data, double[] result);
 
     SupportVectorMachine svm;
+    SemeionDataProvider semeionDataProvider;
+    BasicImageConvertor basicImageConvertor;
 
 
     public CalculateByGPU() {
-
+        semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16, 16), 5);
+        BasicDataProvider basicDataProvider = new BasicDataProvider(semeionDataProvider.getFeatureMatrix(), semeionDataProvider.getLabelMatrix());
+        basicImageConvertor = new BasicImageConvertor(16,16);
+        svm = new SupportVectorMachine(basicDataProvider,new RBFKernel(2.73));
+        svm.train();
     }
 
     //static{
@@ -33,23 +40,15 @@ public class CalculateByGPU {
     }
 
     public int get(Matrix matrix, double[] pros){
-
-
+        Matrix feature = semeionDataProvider.getFeatureExtractor().dataToFeature(basicImageConvertor.toRowMatrix(matrix));
         for (int i = 0; i<= 9;i++) {
-            SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("semeion.data", new ContourExtractor(16, 16), i);
-
-            Matrix fullDataMatrix = semeionDataProvider.getDataMatrix();
-            int total = fullDataMatrix.getHeight();
-            int trainNumber = total;
-
-            DataProvider trainDataProvider = new BasicDataProvider(fullDataMatrix.subMatrix(0, 0,
-                    fullDataMatrix.getWidth(), trainNumber), semeionDataProvider.getLabelMatrix().subMatrix(0, 0,
-                    1, trainNumber));
-            svm = new SupportVectorMachine(trainDataProvider,new RBFKernel(1.0/100));
-            pros[i] = svm.test(matrix);
+            if (i != 5)
+                pros[i] = 0;
+            else {
+                pros[i] = (svm.test(feature) + 1) / 2;
+            }
 
         }
-
         return 1;
 
     }

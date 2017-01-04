@@ -27,7 +27,7 @@ public class ConvKernel {
     }
 
     public void updateBias(Matrix mat) {
-        bias += mat.sum();
+        bias += mat.getSum();
     }
 
     public Matrix convolutionFull(Matrix mat) {

@@ -527,10 +527,10 @@ public class Matrix {
 				sum += data[i][j];
 		return sum;
 	}
-	public boolean set(int x, double[] row) {
-		if (row.length != n) return false;
+	public boolean set(int x, Matrix row) {
+		if (row.getWidth() != n) return false;
 		for (int i = 0; i < n; i++)
-			data[x][i] = row[i];
+			data[x][i] = row.get(0,i);
 		return true;
 	}
 	public double get(int x, int y) {

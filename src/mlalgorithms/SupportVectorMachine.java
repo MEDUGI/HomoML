@@ -251,35 +251,6 @@ public class SupportVectorMachine {
         }
         return j;
     }
-/*
-    private double convergence() {
-        // 采用KKT条件判别是否收敛，在alpha维数过多的时候会过于缓慢
-        /*
-        * KKT条件如下：
-        * yi*Ei >=0 when alpha = 0
-        * yi*Ei ==0 when 0<alpha<C
-        * yi*Ei <=0 when alpha = C
-        */
-        /*
-        int count = 0;
-        int total = alpha.size();
-        for (int i = 0;i<alpha.size();i++) {
-            if ((labelMatrix.get(i,0)*calE(i)>=0 && Math.abs(alpha.get(i))<tol)
-                ||(Math.abs(data.getLabelMatrix().get(i,0)*calE(i))<tol && alpha.get(i)>0 && alpha.get(i)-C < 0)
-                ||(data.getLabelMatrix().get(i,0)*calE(i)>=0 && Math.abs(alpha.get(i)-C)<tol )) {
-                count++;
-            }
-        }
-        double error = -1.0;
-        try {
-            error = Matrix.vectorLength(errorVector.add(new Matrix(errorVector.getHeight(),1, b)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        error  = error / Math.sqrt(errorVector.getHeight());
-        return error;
-    }
-    */
 
     public int test(Matrix x) {
         // 在这里我发现，实际上还是要保留支持向量，因为测试的时候不可能单靠内积来进行计算。
