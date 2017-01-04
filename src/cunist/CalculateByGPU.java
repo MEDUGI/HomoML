@@ -23,7 +23,7 @@ public class CalculateByGPU {
 
 
     public CalculateByGPU() {
-        semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16, 16), 5);
+        semeionDataProvider = new OneNumberSensitiveSemeion("semeion.data", new ContourExtractor(16, 16), 5);
         BasicDataProvider basicDataProvider = new BasicDataProvider(semeionDataProvider.getFeatureMatrix(), semeionDataProvider.getLabelMatrix());
         basicImageConvertor = new BasicImageConvertor(16,16);
         svm = new SupportVectorMachine(basicDataProvider,new RBFKernel(2.73));
