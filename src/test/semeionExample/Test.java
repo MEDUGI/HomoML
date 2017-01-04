@@ -33,12 +33,13 @@ public class Test {
 
         SupportVectorMachine supportVectorMachine = new SupportVectorMachine(trainDataProvider, new RBFKernel(2.73));
         supportVectorMachine.train();
+        supportVectorMachine.saveRbfModelToFile("data\\test\\semeionSave.data");
+        SupportVectorMachine refinedModel = new SupportVectorMachine("data\\test\\semeionSave.data");
         double[][] testResult = new double[testNumber][1];
         for(int i = 0; i < testNumber; i++) {
-            testResult[i][0] = supportVectorMachine.test(testDataProvider.getDataMatrix().get(i));
+            testResult[i][0] = refinedModel.test(testDataProvider.getDataMatrix().get(i));
         }
         System.out.println("The error rate is about " + testErrorRate(new Matrix(testResult), testDataProvider.getLabelMatrix()));
-        // TODO: complete the Test on semeion.data
     }
 
     private static double testErrorRate(Matrix result, Matrix expected) {

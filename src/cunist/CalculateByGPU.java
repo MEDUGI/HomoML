@@ -2,6 +2,7 @@ package cunist;
 
 import basicUtils.BasicImageConvertor;
 import basicUtils.ContourExtractor;
+import basicUtils.FeatureExtractor;
 import basicUtils.Matrix;
 import dataInterface.BasicDataProvider;
 import dataInterface.DataProvider;
@@ -10,29 +11,27 @@ import dataInterface.SemeionDataProvider;
 import examples.RBFKernel;
 import mlalgorithms.SupportVectorMachine;
 
+import java.util.ArrayList;
+
 
 /**
  * Created by ZouKaifa on 2015/12/2.
  */
 public class CalculateByGPU {
-    public native int inference(byte[] data, double[] result);
-
-    SupportVectorMachine svm;
-    SemeionDataProvider semeionDataProvider;
+    ArrayList<SupportVectorMachine> svms;
+    FeatureExtractor featureExtractor;
     BasicImageConvertor basicImageConvertor;
 
 
     public CalculateByGPU() {
-        semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16, 16), 5);
-        BasicDataProvider basicDataProvider = new BasicDataProvider(semeionDataProvider.getFeatureMatrix(), semeionDataProvider.getLabelMatrix());
+        featureExtractor = new ContourExtractor(16,16);
+        svms = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            svms.add(new SupportVectorMachine("data\\semeionModel"+i+".data"));
+        }
         basicImageConvertor = new BasicImageConvertor(16,16);
-        svm = new SupportVectorMachine(basicDataProvider,new RBFKernel(2.73));
-        svm.train();
     }
 
-    //static{
-    //    System.loadLibrary("cuInfer");
-    //}
     public int get(byte[] b, double[] pros){
         int sta = 1;//inference(b,pros);
 
@@ -40,16 +39,22 @@ public class CalculateByGPU {
     }
 
     public int get(Matrix matrix, double[] pros){
-        Matrix feature = semeionDataProvider.getFeatureExtractor().dataToFeature(basicImageConvertor.toRowMatrix(matrix));
+        Matrix feature = featureExtractor.dataToFeature(basicImageConvertor.toRowMatrix(matrix));
+        double top = -1;
         for (int i = 0; i<= 9;i++) {
-            if (i != 5)
+            pros[i] = svms.get(i).test(feature);
+            if (pros[i] < 0) {
                 pros[i] = 0;
-            else {
-                pros[i] = (svm.test(feature) + 1) / 2;
+                continue;
             }
+            if (pros[i] > top)
+                top = pros[i];
+        }
 
+        if (top > 0) {
+            for(int i = 0; i <= 9; i++)
+                pros[i] = pros[i] / top;
         }
         return 1;
-
     }
 }
