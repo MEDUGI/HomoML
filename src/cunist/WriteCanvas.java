@@ -14,7 +14,7 @@ import java.text.DecimalFormat;
  */
 public class WriteCanvas extends Canvas{
     private static int widthAndHeight = 16;
-    private static int canvasWidth = 160;
+    private static int canvasWidth = 250;
     private CalculateByGPU calculateByGPU;
 
 
