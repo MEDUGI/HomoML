@@ -1,8 +1,6 @@
 package test.mnistExample;
 
-import basicUtils.ContourExtractor;
-import dataInterface.MnistDataProvider;
-import dataInterface.SemeionDataProvider;
+import dataInterface.mnistInterfaces.MnistDataProvider;
 
 /**
  * Created by Xiangxi on 2016/12/28.

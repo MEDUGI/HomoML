@@ -4,10 +4,10 @@ import basicUtils.ContourExtractor;
 import basicUtils.Matrix;
 import dataInterface.BasicDataProvider;
 import dataInterface.DataProvider;
-import dataInterface.OneNumberSensitiveSemeion;
-import dataInterface.SemeionDataProvider;
+import dataInterface.semeionInterfaces.SemeionDataProvider;
 import examples.RBFKernel;
 import mlalgorithms.SupportVectorMachine;
+import dataInterface.semeionInterfaces.OneNumberSensitiveSemeion;
 
 /**
  * Created by Xiangxi on 2016/12/27.
@@ -15,13 +15,13 @@ import mlalgorithms.SupportVectorMachine;
  */
 public class Test {
     public static void main(String[] args) {
-        SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16,16),5);
+        SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16,16),4);
 
         Matrix fullDataMatrix = semeionDataProvider.getFeatureMatrix();
         int total = fullDataMatrix.getHeight();
-        double sampleRate = 0.5;
+        double sampleRate = 0.3;
         int trainNumber = (int)(total * sampleRate);
-        int testNumber = trainNumber - 1;
+        int testNumber = total - trainNumber;
 
         DataProvider trainDataProvider = new BasicDataProvider(fullDataMatrix.subMatrix(0, 0,
                 fullDataMatrix.getWidth(), trainNumber), semeionDataProvider.getLabelMatrix().subMatrix(0, 0,
