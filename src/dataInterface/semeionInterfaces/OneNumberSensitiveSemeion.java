@@ -15,6 +15,8 @@ public class OneNumberSensitiveSemeion extends SemeionDataProvider {
         if (digit > 9)
             digit = 9;
         this.digit = digit;
+        relabel();
+
     }
     public OneNumberSensitiveSemeion(String filepath, FeatureExtractor featureExtractor, int digit) {
         super(filepath, featureExtractor);
@@ -23,14 +25,13 @@ public class OneNumberSensitiveSemeion extends SemeionDataProvider {
         if (digit > 9)
             digit = 9;
         this.digit = digit;
+        relabel();
     }
 
     public int digit;
     public static final double eps = 1e-1;
 
-    @Override
-    protected void readFromFile(String filepath) {
-        super.readFromFile(filepath);
+    protected void relabel() {
         double[][] data = labelMatrix.getData();
         for(int i = 0; i < labelMatrix.getHeight(); i++)
             for(int j = 0; j < labelMatrix.getWidth(); j++) {

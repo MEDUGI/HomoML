@@ -1,5 +1,6 @@
 package test.semeionExample;
 
+import basicUtils.BasicImageConvertor;
 import basicUtils.ContourExtractor;
 import basicUtils.Matrix;
 import dataInterface.BasicDataProvider;
@@ -9,13 +10,15 @@ import examples.RBFKernel;
 import mlalgorithms.SupportVectorMachine;
 import dataInterface.semeionInterfaces.OneNumberSensitiveSemeion;
 
+import javax.xml.bind.DatatypeConverter;
+
 /**
  * Created by Xiangxi on 2016/12/27.
  * Contact him on zxx_1996@qq.com
  */
 public class Test {
     public static void main(String[] args) {
-        SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16,16),4);
+        SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16,16),5);
 
         Matrix fullDataMatrix = semeionDataProvider.getFeatureMatrix();
         int total = fullDataMatrix.getHeight();
