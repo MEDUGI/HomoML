@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 import java.text.DecimalFormat;
 
 /**
@@ -133,7 +132,7 @@ public class WriteCanvas extends Canvas{
             }
 
             Matrix test;
-            test = TurnGraphToMatrix(16);
+            test = TurnGraphToMatrix();
 
             int max = 0;
             double[] pro = new double[10];
@@ -151,21 +150,12 @@ public class WriteCanvas extends Canvas{
         }
 
 
-        public Matrix TurnGraphToMatrix (int number) {
-            BufferedImage testImage = new BufferedImage(number,number,BufferedImage.TYPE_BYTE_GRAY);
-            Graphics2D g2 = newImage.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2.drawImage(testImage, 0, 0, number, number, null);
-            g2.dispose();
-
-            double[][] ans = new double[number][number];
-            for (int i = 0; i < testImage.getHeight(); i++) {
-                for (int j = 0; j < testImage.getWidth(); j++) {
-                    int gr = new Color(testImage.getRGB(j, i)).getGreen();
-                    if (gr != 0 ){
-                        ans[j][i] = 1;
-                    }
-                    else ans[j][i] = 0;
+        public Matrix TurnGraphToMatrix () {
+            double[][] ans = new double[16][16];
+            for (int i = 0; i < newImage.getHeight(); i++) {
+                for (int j = 0; j < newImage.getWidth(); j++) {
+                    int gr = new Color(newImage.getRGB(j, i)).getGreen();
+                    ans[j][i] = (double) gr;
                 }
             }
             return new Matrix(ans);

@@ -28,7 +28,7 @@ public class CalculateByGPU {
         featureExtractor = new ContourExtractor(16,16);
         svms = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
-            svms.add(new SupportVectorMachine("data\\semeionModel"+i+".data"));
+            svms.add(new SupportVectorMachine("data/semeionModel"+i+".data"));
         }
         basicImageConvertor = new BasicImageConvertor(16,16);
     }
