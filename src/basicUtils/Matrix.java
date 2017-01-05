@@ -1,5 +1,4 @@
-package basicUtils;
-
+package basicUtils
 /**
  * Created by tmy on 2016/12/10.
  */
@@ -48,7 +47,7 @@ public class Matrix {
 			data[i][0] = vector[i];
 	}
 	
-	public Matrix add(Matrix b) {
+	public final Matrix add(Matrix b) {
 		if (b.n != n || b.m != m) return null;
 		Matrix ans = new Matrix(m, n, 0);
 		for (int i = 0; i < m; i ++) 
@@ -56,7 +55,7 @@ public class Matrix {
 				ans.data[i][j] = data[i][j] + b.data[i][j];
 		return ans;
 	}
-	public Matrix sub(Matrix b) {
+	public final Matrix sub(Matrix b) {
 		if (b.n != n || b.m != m) return null;
 		Matrix ans = new Matrix(m, n, 0);
 		for (int i = 0; i < m; i ++) 
@@ -65,7 +64,7 @@ public class Matrix {
 		return ans;
 	}
 	// this*b
-	public Matrix multiply(Matrix b) throws Exception {
+	public final Matrix multiply(Matrix b) throws Exception {
 		if (n != b.m)
 			throw new Exception("Matrix A's width doesn't match Matrix B's height.");
 		Matrix c = new Matrix(m,b.n,0);
@@ -75,14 +74,14 @@ public class Matrix {
 					c.data[i][j] += this.data[i][k] * b.data[k][j];
 		return c;
 	}
-	public Matrix multiply(double x) {
+	public final Matrix multiply(double x) {
 		Matrix ans = new Matrix(this);
 		for (int i = 0; i < m; i ++) 
 			for (int j = 0; j < n; j ++) 
 				ans.data[i][j] *= x;
 		return ans;
 	}	
-	public Matrix dotProduction(Matrix B) {
+	public final Matrix dotProduction(Matrix B) {
 		if (B.n != n || B.m != m) return null;
 		Matrix ans = new Matrix(m,n);
 		for (int i = 0; i < m; i++)
@@ -90,7 +89,7 @@ public class Matrix {
 				ans.data[i][j] = data[i][j]*B.data[i][j];
 		return ans;
 	}
-	public Matrix reverse() {
+	public final Matrix reverse() {
 		Matrix y = new Matrix(n,m);
 		for (int i = 0; i < m; i ++) 
 			for (int j = 0; j < n; j++) {
@@ -98,7 +97,7 @@ public class Matrix {
 			}	
 		return y;
 	}
-	public Matrix columnUnion(Matrix rightMatrix) throws Exception {
+	public final Matrix columnUnion(Matrix rightMatrix) throws Exception {
 		if (m != rightMatrix.m) 
 			throw new Exception("Matrix heights don't match.");
 		Matrix ans = new Matrix(m, n + rightMatrix.n);
@@ -112,7 +111,7 @@ public class Matrix {
 	}
 	
 	// @return: 将矩阵�?�过高斯消去变成上三角矩阵，返回交换行次�?
-	public int reduce() {
+	public final int reduce() {
 		int swapTimes = 0;
 		for (int h = 0; h < m; h++) {
 			int maxRow = h;
@@ -135,7 +134,7 @@ public class Matrix {
 	}
 
 	// change the 45du data to 1
-	public boolean normalization() {
+	public final boolean normalization() {
 		for (int i = 0; i < m; i ++) {
 			double temp = data[i][i];
 			if (cmp(temp, 0) != 0) {				
@@ -176,7 +175,7 @@ public class Matrix {
 		return solutionVector;
 	}
 	// @return 行列式
-	public double determinant() throws Exception {
+	public final double determinant() throws Exception {
 		if (m != n)
 		    throw new Exception("It's not a square matrix.");
 		Matrix matrix = new Matrix(this);
@@ -322,7 +321,7 @@ public class Matrix {
 		if (l < j) sort(data, l, j, U);
 		if (i < r) sort(data, i, r, U);
 	}
-	private void swap(double[] data, int a, int b) {
+	private final void swap(double[] data, int a, int b) {
 		double temp = data[a];
 		data[a] = data[b];
 		data[b] = temp;
@@ -375,7 +374,7 @@ public class Matrix {
 	}
 	
 	
-	public void unification() {
+	public final void unification() {
 		for (int j = 0; j < n; j ++) {
 			double sum = 0.0;
 			for (int i = 0; i < m; i ++)
@@ -386,7 +385,7 @@ public class Matrix {
 		}
 	}
 	// @return the max eigenvalue of Matrix, and the eigenvector changed
-	public double getMAXEigenvalue(Matrix eigenvector) {		
+	public final double getMAXEigenvalue(Matrix eigenvector) {		
 		Matrix W = copy();
 		W.unification();
 		double[][] newdata = new double[m][1];
@@ -410,7 +409,7 @@ public class Matrix {
 		return ans/m;
 	}
 	// @return norm1: the max abs_sum of lines
-	public double getNorm1() {
+	public final double getNorm1() {
 		double norm1 = 0.0;
 		for (int j = 0; j < n; j++) {
 			double sum = 0.0;
@@ -421,7 +420,7 @@ public class Matrix {
 		return norm1;
 	}
 	// @return norm2: the sqrt of the max eigenvalue of AT*A 
-	public double getNorm2() {
+	public final double getNorm2() {
 		Matrix T = this.reverse();
 		try {
 			Matrix mat = T.multiply(this);
@@ -434,7 +433,7 @@ public class Matrix {
 		return 0.0;
 	}
 	// @return norm: the max abs_sum of rows
-	public double getNormInfinity() {
+	public final double getNormInfinity() {
 		double norm = 0.0;
 		for (int i = 0; i < m; i++) {
 			double sum = 0.0;
@@ -446,7 +445,7 @@ public class Matrix {
 		return norm;
 	}
 	// @return normF: the Frobenius norm
-	public double getNormF() {
+	public final double getNormF() {
 		double normF = 0.0;
 		for (int i = 0; i < m; i ++)
 			for (int j = 0; j < n; j++)
@@ -455,7 +454,7 @@ public class Matrix {
 		return normF;
 	}
 	// @return norm2: the norm2 for vector
-	public double getNorm2Vector() {
+	public final double getNorm2Vector() {
 		double norm2 = 0.0;
 		for (int i = 0; i < m; i++)
 			norm2 += data[i][0] * data[i][0];
@@ -463,7 +462,7 @@ public class Matrix {
 		return norm2;
 	}
 	// @return norm: the min abs_sum of rows
-	public double getNormInfinitesimalVector() {
+	public final double getNormInfinitesimalVector() {
 		double norm = 0.0;
 		for (int i = 0; i < m; i++) {
 			double sum = 0.0;
@@ -474,19 +473,19 @@ public class Matrix {
 		}
 		return norm;
 	}
-	public double getNormPVector(double p) {
+	public final double getNormPVector(double p) {
 		double norm = 0.0;
 		for (int i = 0; i < m; i ++)
 			norm += Math.pow(Math.abs(data[i][0]), p) / p;
 		return norm;
 	}
 	
-	private int cmp(double a, double b) {
+	private final int cmp(double a, double b) {
 		if (a-b > eps) return 1;
 		if (b-a > eps) return -1;
 		return 0;
 	}
-	private void swapRow(int a, int b) {
+	private final void swapRow(int a, int b) {
 		if (a == b) return;
 		double x;
 		for (int i = 0; i < n; i ++) {
@@ -496,7 +495,7 @@ public class Matrix {
 		}
 	}
 	
-	public Matrix rot180() {
+	public final Matrix rot180() {
 		Matrix B = new Matrix(m,n);
 		for (int i = 0; i < m; i++)
 			for (int j = 0; j < n; j++) {
@@ -507,7 +506,7 @@ public class Matrix {
 		return B;
 	}
 	
-	public Matrix subMatrix(int left, int top, int right, int bottom) {
+	public final Matrix subMatrix(int left, int top, int right, int bottom) {
 		int mm = bottom-top, nn = right-left;
 	    double[][] newdata = new double[mm][nn];
 	    for (int i = top; i < bottom; i ++)
@@ -516,61 +515,61 @@ public class Matrix {
 	    return new Matrix(newdata);
 	}
 	
-	public double getSum() {
+	public final double getSum() {
 		double sum = 0.0;
 		for (int i = 0; i < m; i++)
 			for (int j = 0; j < n; j++)
 				sum += data[i][j];
 		return sum;
 	}
-	public boolean set(int x, double[] row) {
+	public final boolean set(int x, double[] row) {
 		if (row.length != n) return false;
 		for (int i = 0; i < n; i++)
 			data[x][i] = row[i];
 		return true;
 	}
-	public double get(int x, int y) {
+	public final double get(int x, int y) {
 		return data[x][y];
 	}	
-	public boolean set(int x, int y, double value) {
+	public final boolean set(int x, int y, double value) {
 		if (x >= m || x < 0) return false;
 		if (y >= n || y < 0) return false;
 		data[x][y] = value;
 		return true;
 	}
 	// @return Matrix for data[x][] (1*width)
-	public Matrix get(int x) {
+	public final Matrix get(int x) {
 		double[][] newrow = new double[1][n];
 		for (int j = 0; j < n; j++)
 			newrow[0][j] = data[x][j];		
 		return new Matrix(newrow);
 	}
 	// @return Matrix for data[][y]
-	public Matrix getLine(int y) {
+	public final Matrix getLine(int y) {
 		double[][] newrow = new double[m][1];
 		for (int i = 0; i < m; i++)
 			newrow[i][0] = data[i][y];		
 		return new Matrix(newrow);
 	}
-	public int getHeight() {
+	public final int getHeight() {
 		return m;
 	}
-	public void setHeight(int height) {
+	public final void setHeight(int height) {
 		m = height;
 	}
-	public int getWidth() {
+	public final int getWidth() {
 		return n;
 	}
-	public void setWidth(int width) {
+	public final void setWidth(int width) {
 		n = width;
 	}
-	private void setData(double[][] data) {
+	private final void setData(double[][] data) {
 		for (int i = 0; i < m; i++)
 			for (int j = 0; j < n; j++)
 				this.data[i][j] = data[i][j];
 	}
 	
-	public static double vectorLength(Matrix vector) throws Exception {
+	public final static double vectorLength(Matrix vector) throws Exception {
 	    if (vector.n != 1)
 	        throw new Exception("The inputed matrix is not a vector");
 	    double result = 0;
@@ -579,7 +578,7 @@ public class Matrix {
 	    return Math.sqrt(result);		
 	}
 	// @return data[][]
-	public double[][] getData() {
+	public final double[][] getData() {
 		double[][] newdata = new double[m][n];
 		for (int i = 0; i < m; i ++)
 			for (int j = 0; j < n; j ++)
@@ -587,7 +586,7 @@ public class Matrix {
 	    return newdata;
 	}
 
-	public Matrix copy() {
+	public final Matrix copy() {
 		return new Matrix(this);
 	}
 	public void print() {
