@@ -7,6 +7,7 @@ import dataInterface.DataProvider;
 import dataInterface.semeionInterfaces.MulticolumnDigitDataProvider;
 import dataInterface.semeionInterfaces.SemeionDataProvider;
 import examples.ReLUActivationFunction;
+import examples.SigmoidActivationFunction;
 import mlalgorithms.CNNetwork;
 import mlalgorithms.FullConnectionLayer;
 
@@ -27,15 +28,15 @@ public class TestNN {
 
         DataProvider trainDataProvider = new BasicDataProvider(fullDataMatrix.subMatrix(0, 0,
                 fullDataMatrix.getWidth(), trainNumber), multicolumnDigitDataProvider.getLabelMatrix().subMatrix(0, 0,
-                1, trainNumber));
+                10, trainNumber));
         DataProvider testDataProvider = new BasicDataProvider(
                 fullDataMatrix.subMatrix(0, trainNumber, fullDataMatrix.getWidth(), total),
-                multicolumnDigitDataProvider.getLabelMatrix().subMatrix(0, trainNumber, 1, total)
+                multicolumnDigitDataProvider.getLabelMatrix().subMatrix(0, trainNumber, 10, total)
         );
 
         CNNetwork NN = new CNNetwork();
         NN.insertLayer(new FullConnectionLayer(64,128, new ReLUActivationFunction()));
-        NN.insertLayer(new FullConnectionLayer(128,10,new ReLUActivationFunction()));
+        NN.insertLayer(new FullConnectionLayer(128,10,new SigmoidActivationFunction()));
         NN.setImgs(trainDataProvider);
         NN.train();
 
@@ -45,9 +46,9 @@ public class TestNN {
             double tempMax = -10;
             int jTemp = 0;
             for(int j = 0; j < 10; j++) {
-                if (oneResultVector.get(j,0)>tempMax) {
+                if (oneResultVector.get(0,j)>tempMax) {
                     jTemp = j;
-                    tempMax = oneResultVector.get(j,0);
+                    tempMax = oneResultVector.get(0,j);
                 }
             }
             testResult[i][0] = jTemp;
@@ -58,10 +59,11 @@ public class TestNN {
     }
 
     private static double testErrorRate(Matrix result, Matrix expected) {
+        System.out.println(result.getSum());
         double sum = 0;
         int length = result.getHeight();
         for(int i = 0; i < length; i++) {
-            if (Math.abs(result.get(i,0) - expected.get(i,0)) > 0.5)
+            if (expected.get(i, (int)Math.round(result.get(i,0))) < 0.5)
                 sum += 1;
         }
         return sum / length;

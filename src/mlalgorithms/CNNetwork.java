@@ -16,7 +16,8 @@ import java.util.ArrayList;
 public class CNNetwork {
     private DataProvider imgs;
     private ArrayList<Layer> layers;
-    private double tol = 0.001;
+    private double tol = 1e-8;
+    private int batchSize = 100;
 
     public CNNetwork() {
         layers = new ArrayList<Layer>();
@@ -44,16 +45,23 @@ public class CNNetwork {
             return -1;
         }
         while (isContinued) {
-            input = imgs.getDataMatrix().get(rank);
-            for (int i = 0; i < length; i++) {
-                Layer temp = layers.get(i);
-                output = temp.forwardPropagation(input);
-                input = output;
+            for (int j = 0;j<batchSize;j++) {
+                rank = (int) Math.floor(Math.random() * imgs.getDataMatrix().getHeight());
+                input = imgs.getDataMatrix().get(rank);
+                for (int i = 0; i < length; i++) {
+                    Layer temp = layers.get(i);
+                    output = temp.forwardPropagation(input);
+                    input = output;
+                }
+                error = output.sub(imgs.getLabelMatrix().get(rank));
+                for (int i = length - 1; i >= 0; i--) {
+                    Layer temp = layers.get(i);
+                    error = temp.backPropagation(error);
+                }
             }
-            error = output.sub(imgs.getLabelMatrix());
-            for (int i = length-1;i >=0; i--) {
+            for (int i = 0;i < length;i++) {
                 Layer temp = layers.get(i);
-                error = temp.backPropagation(error);
+                temp.updateWeights(batchSize);
             }
             isContinued = !isConvergence();
         }

@@ -8,19 +8,29 @@ import basicUtils.Matrix;
 public class FullConnectionLayer implements Layer{
     int inputNum;
     int outputNum;
-    double eta = 0.5;
+    double eta = 0.00001;
     ActivationFunction acFunc;
     Matrix weights;
     Matrix bias;
     Matrix output;
     Matrix input;
     double convergency;
+    Matrix deltaW;
+    Matrix deltab;
 
     public FullConnectionLayer(int inputNum, int outputNum, ActivationFunction func) {
         this.inputNum = inputNum;
         this.outputNum = outputNum;
         acFunc = func;
-        weights = new Matrix(inputNum,outputNum,1.0);
+        weights = new Matrix(inputNum,outputNum);
+        deltab = new Matrix(1,outputNum,0.0);
+        deltaW = new Matrix(inputNum,outputNum,0.0);
+        double coefficient = Math.sqrt(6.0)/Math.sqrt(inputNum+outputNum);
+        for (int i = 0;i<inputNum;i++) {
+            for (int j = 0;j<outputNum;j++) {
+                weights.set(i,j,(Math.random()-0.5)/0.5*coefficient);
+            }
+        }
         bias = new Matrix(1,outputNum,0.0);
         output = new Matrix(1, outputNum,0.0);
     }
@@ -43,7 +53,7 @@ public class FullConnectionLayer implements Layer{
                 temp += input.get(0,j)*weights.get(j,i);
                 temp += bias.get(0,i);
             }
-            output.set(1,i,acFunc.cal(temp));
+            output.set(0,i,acFunc.cal(temp));
         }
         return output;
     }
@@ -52,23 +62,33 @@ public class FullConnectionLayer implements Layer{
         Matrix thetas = new Matrix(1, outputNum);
         convergency = 0.0;
         for (int i = 0;i < outputNum;i++) {
-            thetas.set(0,i,acFunc.derivation(errors.get(0,i)));
+            thetas.set(0,i,acFunc.derivation(output.get(0,i))*err.get(0,i));
+            double deltabTMP = deltab.get(0,i) + thetas.get(0,i);
+            deltab.set(0,i,deltabTMP);
         }
         for (int i = 0;i < inputNum;i++) {
             double temp = 0.0;
-            for (int j = 0;j < outputNum;i++) {
-                temp += thetas.get(0,j) * weights.get(i,j);     // TODO: so many bugs here.
-                //update weights
-                double theta = eta*thetas.get(0,j)*input.get(0,i);
-                convergency += theta;
-                weights.set(i,j,weights.get(i,j)-theta);
-                //update bias
-                bias.set(0,j,bias.get(0,j)+eta*thetas.get(0,j));
+            for (int j = 0;j < outputNum;j++) {
+                temp += thetas.get(0,j) * weights.get(i,j);
+                double deltaWTMP = deltaW.get(i,j) + deltab.get(0,j)*input.get(0,i);
+                deltaW.set(i,j,deltaWTMP);
             }
-            errors.set(1,i,temp);
+            errors.set(0,i,temp);
         }
-        convergency = convergency / (inputNum * outputNum);
         return errors;
+    }
+
+    public void updateWeights(int batchSzie){
+        convergency = 0;
+        for (int i = 0;i<outputNum;i++) {
+            bias.set(0,i,bias.get(0,i)+deltab.get(0,i)/batchSzie);
+            for (int j = 0;j<inputNum;j++) {
+                weights.set(j,i,weights.get(j,i)+deltaW.get(j,i)/batchSzie);
+                convergency += deltaW.get(j,i);
+            }
+        }
+        deltab = new Matrix(1,outputNum,0.0);
+        deltaW = new Matrix(inputNum,outputNum,0.0);
     }
 
     public void changeEta(int param) {

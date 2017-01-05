@@ -121,4 +121,8 @@ public class ConvolutionLayer implements Layer {
         }
         return errors;
     }
+
+    public void updateWeights(int batchSize) {
+
+    }
 }
