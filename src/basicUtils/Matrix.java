@@ -231,7 +231,7 @@ public class Matrix {
 					U.data[i][j] = 0.0;
 		}		
 		
-		int MAXCOUNT = 1000;
+		int MAXCOUNT = 10000;
 		for (int nCount = 0; nCount < MAXCOUNT; nCount ++) {
 			// find the max data in matrix not on the diagonal
 			int p = 0;
@@ -247,8 +247,6 @@ public class Matrix {
 					}
 			// judge ending 
 			if (cmp(maxdata, dbEps) < 0) break;
-			//if (nCount > MAXCOUNT) break;
-			
 			
 			double App = A.data[p][p];
 			double Apq = A.data[p][q];
@@ -293,7 +291,7 @@ public class Matrix {
 		double[] eigenvalue = new double[A.m];
 		for (int i = 0; i < A.m; i++)
 			eigenvalue[i] = A.data[i][i];
-		sort(eigenvalue, 0, K-1, U);
+		//sort(eigenvalue, 0, K-1, U);
 		
 		// judge plus or minus
 		for (int j = 0; j < A.n; j++) {
@@ -340,19 +338,15 @@ public class Matrix {
 		if (n != m) return null;
 		if (K == 0 || K > n) K = n;		
 		Matrix U = new Matrix(m, n);
-		Matrix D = JacobiEigenvalue(K, 0.01, U);
+		Matrix D = JacobiEigenvalue(K, 0.001, U);
 		for (int i = 0; i < eigenvectors.getHeight(); i ++)
 			for (int j = 0; j < eigenvectors.getWidth(); j++)
 				eigenvectors.data[i][j] = U.data[i][j];
-		Matrix eigenvalue = new Matrix(D.n, 1);
+		/*Matrix eigenvalue = new Matrix(D.m, 1);
 		for (int i = 0; i < D.n; i++)
 			eigenvalue.data[i][0] = D.data[i][i];
-		//for (int j = 0; j < U.n; j++)
-		//	eigenvectors[j] = U.getLine(j);
-		eigenvectors.print();
-		System.out.println("eigenvalue: ");
-		eigenvalue.print();
-		return eigenvalue;
+		return eigenvalue;*/
+		return D;
 	}
 	
 	public Matrix[] svd(int K) throws Exception {
@@ -360,6 +354,8 @@ public class Matrix {
 		Matrix A = this.copy();
 		Matrix AT = A.reverse();
 		Matrix W = A.multiply(AT);
+		W.print();
+		System.out.println();
 		Matrix V = new Matrix(n,K);
 		Matrix lamda = W.getEigenvalue(K, V);
 		Matrix sigma = new Matrix(K, K, 0);
