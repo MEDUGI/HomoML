@@ -158,11 +158,6 @@ public class WriteCanvas extends Canvas{
                     ans[i][j] = gr == 0? 0 : 1;
                 }
             }
-            for(int i=0; i<16; i++) {
-                for (int j = 0; j < 16; j++)
-                    System.out.print((int)ans[i][j]);
-                System.out.println();
-            }
             return new Matrix(ans);
         }
 

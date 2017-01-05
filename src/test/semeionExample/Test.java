@@ -18,11 +18,24 @@ import javax.xml.bind.DatatypeConverter;
  */
 public class Test {
     public static void main(String[] args) {
-        SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16,16),5);
+        for(int i = 0; i < 20; i++) {
+            double gamma = 2.0 + i * 0.07;
+            System.out.print(gamma + ": ");
+            testOnOneDigit(9, gamma);
+        }
+    }
+
+    private static void testThroughtTen() {
+        for(int i = 0; i < 10; i++)
+            testOnOneDigit(i, 2.78);
+    }
+
+    private static void testOnOneDigit(int digit, double gamma) {
+        SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16,16),digit);
 
         Matrix fullDataMatrix = semeionDataProvider.getFeatureMatrix();
         int total = fullDataMatrix.getHeight();
-        double sampleRate = 0.3;
+        double sampleRate = 0.6;
         int trainNumber = (int)(total * sampleRate);
         int testNumber = total - trainNumber;
 
@@ -34,7 +47,7 @@ public class Test {
                 semeionDataProvider.getLabelMatrix().subMatrix(0, trainNumber, 1, total)
         );
 
-        SupportVectorMachine supportVectorMachine = new SupportVectorMachine(trainDataProvider, new RBFKernel(2.73));
+        SupportVectorMachine supportVectorMachine = new SupportVectorMachine(trainDataProvider, new RBFKernel(gamma));
         supportVectorMachine.train();
         supportVectorMachine.saveRbfModelToFile("data\\test\\semeionSave.data");
         SupportVectorMachine refinedModel = new SupportVectorMachine("data\\test\\semeionSave.data");
@@ -42,7 +55,7 @@ public class Test {
         for(int i = 0; i < testNumber; i++) {
             testResult[i][0] = refinedModel.test(testDataProvider.getDataMatrix().get(i));
         }
-        System.out.println("The error rate is about " + testErrorRate(new Matrix(testResult), testDataProvider.getLabelMatrix()));
+        System.out.println(digit + ": the error rate is about " + testErrorRate(new Matrix(testResult), testDataProvider.getLabelMatrix()));
     }
 
     private static double testErrorRate(Matrix result, Matrix expected) {

@@ -17,7 +17,7 @@ public class SupportVectorMachine {
     private Matrix dataMatrix;
     private Matrix labelMatrix;
     private Matrix errorVector;
-    private Matrix centralizingVector;  // TODO: centralize the dataMatrix.
+    private Matrix centralizingVector;
     private ArrayList<Double> alpha;
     private HashSet<Integer> boundaryPoints;
     private double b;
@@ -101,7 +101,6 @@ public class SupportVectorMachine {
                 dataMatrix.set(i, j, dataMatrix.get(i, j) - centralizingVector.get(0, j));
         }
         SMO();
-        System.out.println("Train Has Finished!");
     }
 
     private double calE(int i) {
@@ -190,7 +189,7 @@ public class SupportVectorMachine {
                 alphaChanges++;
             }
             if (count >= 0) {
-                System.out.println("count:"+count + ";alphaChanges = " + alphaChanges);
+                //System.out.println("count:"+count + ";alphaChanges = " + alphaChanges);
             }
             count++;
             if (alphaChanges == 0)
