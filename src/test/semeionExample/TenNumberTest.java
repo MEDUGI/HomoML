@@ -3,8 +3,8 @@ package test.semeionExample;
 import basicUtils.BasicImageConvertor;
 import basicUtils.ContourExtractor;
 import dataInterface.BasicDataProvider;
-import dataInterface.OneNumberSensitiveSemeion;
-import dataInterface.SemeionDataProvider;
+import dataInterface.semeionInterfaces.OneNumberSensitiveSemeion;
+import dataInterface.semeionInterfaces.SemeionDataProvider;
 import examples.RBFKernel;
 import mlalgorithms.SupportVectorMachine;
 
