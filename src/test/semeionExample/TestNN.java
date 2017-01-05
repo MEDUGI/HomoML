@@ -4,13 +4,11 @@ import basicUtils.ContourExtractor;
 import basicUtils.Matrix;
 import dataInterface.BasicDataProvider;
 import dataInterface.DataProvider;
-import dataInterface.OneNumberSensitiveSemeion;
-import dataInterface.SemeionDataProvider;
-import examples.RBFKernel;
+import dataInterface.semeionInterfaces.MulticolumnDigitDataProvider;
+import dataInterface.semeionInterfaces.SemeionDataProvider;
 import examples.ReLUActivationFunction;
 import mlalgorithms.CNNetwork;
 import mlalgorithms.FullConnectionLayer;
-import mlalgorithms.SupportVectorMachine;
 
 /**
  * Created by 李沅泽 on 2017/1/3.
@@ -18,19 +16,21 @@ import mlalgorithms.SupportVectorMachine;
 public class TestNN {
     public static void main(String[] args) throws Exception{
         SemeionDataProvider semeionDataProvider = new SemeionDataProvider("data\\semeion.data", new ContourExtractor(16,16));
+        BasicDataProvider basicDataProvider = new BasicDataProvider(semeionDataProvider.getFeatureMatrix(), semeionDataProvider.getLabelMatrix());
+        MulticolumnDigitDataProvider multicolumnDigitDataProvider = new MulticolumnDigitDataProvider(basicDataProvider);
 
-        Matrix fullDataMatrix = semeionDataProvider.getDataMatrix();
+        Matrix fullDataMatrix = multicolumnDigitDataProvider.getDataMatrix();
         int total = fullDataMatrix.getHeight();
         double sampleRate = 0.5;
         int trainNumber = (int)(total * sampleRate);
         int testNumber = trainNumber - 1;
 
         DataProvider trainDataProvider = new BasicDataProvider(fullDataMatrix.subMatrix(0, 0,
-                fullDataMatrix.getWidth(), trainNumber), semeionDataProvider.getLabelMatrix().subMatrix(0, 0,
+                fullDataMatrix.getWidth(), trainNumber), multicolumnDigitDataProvider.getLabelMatrix().subMatrix(0, 0,
                 1, trainNumber));
         DataProvider testDataProvider = new BasicDataProvider(
                 fullDataMatrix.subMatrix(0, trainNumber, fullDataMatrix.getWidth(), total),
-                semeionDataProvider.getLabelMatrix().subMatrix(0, trainNumber, 1, total)
+                multicolumnDigitDataProvider.getLabelMatrix().subMatrix(0, trainNumber, 1, total)
         );
 
         CNNetwork NN = new CNNetwork();
@@ -41,7 +41,17 @@ public class TestNN {
 
         double[][] testResult = new double[testNumber][1];
         for(int i = 0; i < testNumber; i++) {
-            testResult[i][0] = NN.test(testDataProvider.getDataMatrix().get(i));
+            Matrix oneResultVector = NN.test(testDataProvider.getDataMatrix().get(i));
+            double tempMax = -10;
+            int jTemp = 0;
+            for(int j = 0; j < 10; j++) {
+                if (oneResultVector.get(j,0)>tempMax) {
+                    jTemp = j;
+                    tempMax = oneResultVector.get(j,0);
+                }
+            }
+            testResult[i][0] = jTemp;
+            //testResult[i][0] = NN.test(testDataProvider.getDataMatrix().get(i));
         }
         System.out.println("The error rate is about " + testErrorRate(new Matrix(testResult), testDataProvider.getLabelMatrix()));
         // TODO: complete the Test on semeion.data
@@ -51,7 +61,7 @@ public class TestNN {
         double sum = 0;
         int length = result.getHeight();
         for(int i = 0; i < length; i++) {
-            if (result.get(i,0) * expected.get(i,0) < 0)
+            if (Math.abs(result.get(i,0) - expected.get(i,0)) > 0.5)
                 sum += 1;
         }
         return sum / length;

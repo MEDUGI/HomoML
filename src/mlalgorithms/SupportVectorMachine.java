@@ -2,19 +2,22 @@ package mlalgorithms;
 
 import basicUtils.Matrix;
 import dataInterface.DataProvider;
+import examples.RBFKernel;
 
+import java.io.*;
 import java.util.*;
 
 public class SupportVectorMachine {
     /*
      * 一个简单的二分类SVM
      */
-    private KernelFunction fKernel;  // Kernel函数，用于求高维空间中的向量内积，默认为线性核
+    private RBFKernel fKernel;  // Kernel函数，用于求高维空间中的向量内积，默认为线性核
     private DataProvider data;
     private Matrix productMatrix;
     private Matrix dataMatrix;
     private Matrix labelMatrix;
     private Matrix errorVector;
+    private Matrix centralizingVector;  // TODO: centralize the dataMatrix.
     private ArrayList<Double> alpha;
     private HashSet<Integer> boundaryPoints;
     private double b;
@@ -29,61 +32,80 @@ public class SupportVectorMachine {
         dataMatrix = data.getDataMatrix();
         labelMatrix = data.getLabelMatrix();
     }
-    public SupportVectorMachine(DataProvider dp,KernelFunction k) {
+
+    public SupportVectorMachine(DataProvider dp,RBFKernel k) {
         data=dp;
         dataMatrix = data.getDataMatrix();
         labelMatrix = data.getLabelMatrix();
         fKernel = k;
     }
 
+    /**
+     *
+     * @param filepath : the data file
+     * the data is formatted as that in saveRbfModelToFile
+     * this version of SVM supports only rbf kernel now
+     */
+    public SupportVectorMachine(String filepath) {
+        File file = new File(filepath);
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+            DataInputStream dataInputStream = new DataInputStream(bufferedInputStream);
+            if (dataInputStream.readInt() != 0x1086)
+                throw new IOException("File's magic number not matches");
+
+
+            int count = dataInputStream.readInt();              // number of data
+            int width = dataInputStream.readInt();              // width of data
+            b = dataInputStream.readDouble();                   // bias
+            double gamma = dataInputStream.readDouble();        // rbf_gamma
+
+            centralizingVector = new Matrix(1, width);
+            alpha = new ArrayList<>(Collections.nCopies(count, 0.0));
+            labelMatrix = new Matrix(count, 1, 1.0);
+            dataMatrix = new Matrix(count, width);
+            fKernel = new RBFKernel(gamma);
+
+            for(int i = 0; i < width; i++)
+                centralizingVector.set(0, i, dataInputStream.readDouble());
+
+            for(int i = 0; i < count; i++) {
+                alpha.set(i, dataInputStream.readDouble());
+            }
+
+            for(int i = 0; i < count; i++) {
+                for(int j = 0; j < width; j++)
+                    dataMatrix.set(i, j, dataInputStream.readDouble());
+            }
+        }catch (EOFException e) {
+            //nothing need to be done here.
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void train() {
         if (!data.isReady()) {
             System.err.println("Not Enough Data");
-            return ;
+            return;
+        }
+        centralizingVector = new Matrix(1, dataMatrix.getWidth(), 0.0);
+        for(int i = 0; i < dataMatrix.getWidth(); i++) {
+            for(int j = 0; j < dataMatrix.getHeight(); j++)
+                centralizingVector.set(0, i, centralizingVector.get(0, i) + dataMatrix.get(j, i));
+        }
+        centralizingVector = centralizingVector.multiply(1.0 / dataMatrix.getHeight());
+        for(int i = 0; i < dataMatrix.getHeight(); i++) {
+            for(int j = 0; j < dataMatrix.getWidth(); j++)
+                dataMatrix.set(i, j, dataMatrix.get(i, j) - centralizingVector.get(0, j));
         }
         SMO();
-        System.err.println("Train Has Finished!");
+        System.out.println("Train Has Finished!");
     }
 
     private double calE(int i) {
         return errorVector.get(i, 0) + b;
-    }
-
-    private boolean isKktToleranted(int i) {
-        double expected = calE(i);
-        double value=alpha.get(i);
-        if (expected > 0 && Math.abs(value) > eps) {
-            return false;
-        }
-        if (expected < 0 && Math.abs(value-C) > eps) {
-            return false;
-        }
-        if (Math.abs(expected) < eps){
-            if (value <= 0 || value >= C) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private double calculateKktViolence(int i) {
-        double expected = calE(i);
-        double value=alpha.get(i).doubleValue();
-        if (expected > 0 && Math.abs(value) > eps) {
-            return Math.abs(value);
-        }
-        if (expected < 0 && Math.abs(value-C) > eps) {
-            return Math.abs(value-C);
-        }
-        if (Math.abs(expected) < eps){
-            if (value <= 0) {
-                return Math.abs(value);
-            }
-            if (value >= C) {
-                return Math.abs(value-C);
-            }
-        }
-        return -1;
     }
 
     private void SMO() {
@@ -191,7 +213,7 @@ public class SupportVectorMachine {
 
         //初始化b的值，可以考虑随机或者置默认值
         //Todo 后续优化b参数取值
-        b = 1;
+        b = 0;
 
         //求Kernel矩阵
         GetKernelMatrix();
@@ -212,7 +234,7 @@ public class SupportVectorMachine {
 
     private void updateErrorVector(int i, int j, double deltaAlphaI, double deltaAlphaJ) {
         Matrix iFixVector = productMatrix.get(i).reverse().multiply(deltaAlphaI * labelMatrix.get(i,0));
-        Matrix jFixVector = productMatrix.get(j).reverse().multiply(deltaAlphaJ * labelMatrix.get(j,0));
+        Matrix jFixVector = productMatrix.get(j).reverse().multiply(deltaAlphaJ * labelMatrix.get(j, 0));
         errorVector = errorVector.add(iFixVector);
         errorVector = errorVector.add(jFixVector);
     }
@@ -251,52 +273,89 @@ public class SupportVectorMachine {
         }
         return j;
     }
-/*
-    private double convergence() {
-        // 采用KKT条件判别是否收敛，在alpha维数过多的时候会过于缓慢
-        /*
-        * KKT条件如下：
-        * yi*Ei >=0 when alpha = 0
-        * yi*Ei ==0 when 0<alpha<C
-        * yi*Ei <=0 when alpha = C
-        */
-        /*
-        int count = 0;
-        int total = alpha.size();
-        for (int i = 0;i<alpha.size();i++) {
-            if ((labelMatrix.get(i,0)*calE(i)>=0 && Math.abs(alpha.get(i))<tol)
-                ||(Math.abs(data.getLabelMatrix().get(i,0)*calE(i))<tol && alpha.get(i)>0 && alpha.get(i)-C < 0)
-                ||(data.getLabelMatrix().get(i,0)*calE(i)>=0 && Math.abs(alpha.get(i)-C)<tol )) {
-                count++;
-            }
-        }
-        double error = -1.0;
-        try {
-            error = Matrix.vectorLength(errorVector.add(new Matrix(errorVector.getHeight(),1, b)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        error  = error / Math.sqrt(errorVector.getHeight());
-        return error;
-    }
-    */
 
-    public int test(Matrix x) {
+    public double test(Matrix x) {
         // 在这里我发现，实际上还是要保留支持向量，因为测试的时候不可能单靠内积来进行计算。
+        Matrix result = x.sub(centralizingVector);
         double f = 0.0;
         for (int i=0;i<alpha.size();i++) {
-            f = f + alpha.get(i)*labelMatrix.get(i,0)*fKernel.cal(dataMatrix.get(i),x);
+            f = f + alpha.get(i)*labelMatrix.get(i,0)*fKernel.cal(dataMatrix.get(i),result);
         }
         f += b;
-        if (f > 0) return 1;
-        else return -1;
+        return f;
+    }
+
+    /**
+     *
+     * @param filepath
+     *
+     * @return whether the model is saved properly
+     * file format:
+     * int 0x1086 : magic number for rbf-kernel svm model
+     * int count : number of data
+     * int width : length of each data
+     * double b : the bias of model
+     * double rbf_gamma : the gamma parameter of rbf kernel
+     * double[width]: the centralizing row vector.
+     * double[count] alpha: the alpha vector multiplies by the label vector
+     * double[count][width] data : the data matrix
+     */
+    public boolean saveRbfModelToFile(String filepath) {
+        File file = new File(filepath);
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            DataOutputStream dataOutputStream = new DataOutputStream(bufferedOutputStream);
+
+            dataOutputStream.writeInt(0x1086);                  // magic number
+
+            int count = 0;
+            for(double i : alpha)
+                if (Math.abs(i) > eps)
+                    count++;
+
+            dataOutputStream.writeInt(count);                   // height of data
+            dataOutputStream.writeInt(dataMatrix.getWidth());   // width of data
+            dataOutputStream.writeDouble(b);                    // bias
+            dataOutputStream.writeDouble(fKernel.getGamma());   // rbf_gamma
+
+            for(int i = 0; i < dataMatrix.getWidth(); i++)
+                dataOutputStream.writeDouble(centralizingVector.get(0, i));
+
+            int countTemp = 0;
+            for(int i = 0; i < alpha.size(); i++) {
+                if (Math.abs(alpha.get(i)) > eps) {
+                    dataOutputStream.writeDouble(alpha.get(i) * labelMatrix.get(i, 0));
+                    countTemp++;
+                }
+            }
+            if (countTemp != count)
+                throw new Exception("Error: count not matches.");
+
+            countTemp = 0;
+            for(int i = 0; i < alpha.size(); i++)
+                if (Math.abs(alpha.get(i)) > eps) {
+                    countTemp++;
+                    for(int j = 0; j < dataMatrix.getWidth(); j++)
+                        dataOutputStream.writeDouble(dataMatrix.get(i,j));
+                                                                // data matrix
+                }
+
+            if (countTemp != count)
+                throw new Exception("Error: count not matches.");
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public KernelFunction getfKernel() {
         return fKernel;
     }
 
-    public void setfKernel(KernelFunction fKernel) {
+    public void setfKernel(RBFKernel fKernel) {
         this.fKernel = fKernel;
     }
 

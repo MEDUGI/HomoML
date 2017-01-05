@@ -40,8 +40,8 @@ public class FullConnectionLayer implements Layer{
         for (int i = 0;i<outputNum;i++) {
             double temp = 0;
             for (int j = 0;j < inputNum;j++) {
-                temp += input.get(1,j)*weights.get(j,i);
-                temp += bias.get(1,i);
+                temp += input.get(0,j)*weights.get(j,i);
+                temp += bias.get(0,i);
             }
             output.set(1,i,acFunc.cal(temp));
         }
@@ -52,18 +52,18 @@ public class FullConnectionLayer implements Layer{
         Matrix thetas = new Matrix(1, outputNum);
         convergency = 0.0;
         for (int i = 0;i < outputNum;i++) {
-            thetas.set(1,i,acFunc.derivation(errors.get(1,i)));
+            thetas.set(0,i,acFunc.derivation(errors.get(0,i)));
         }
         for (int i = 0;i < inputNum;i++) {
             double temp = 0.0;
             for (int j = 0;j < outputNum;i++) {
-                temp += thetas.get(1,j) * weights.get(i,j);
+                temp += thetas.get(0,j) * weights.get(i,j);     // TODO: so many bugs here.
                 //update weights
-                double theta = eta*thetas.get(1,j)*input.get(1,i);
+                double theta = eta*thetas.get(0,j)*input.get(0,i);
                 convergency += theta;
                 weights.set(i,j,weights.get(i,j)-theta);
                 //update bias
-                bias.set(1,j,bias.get(1,j)+eta*thetas.get(1,j));
+                bias.set(0,j,bias.get(0,j)+eta*thetas.get(0,j));
             }
             errors.set(1,i,temp);
         }

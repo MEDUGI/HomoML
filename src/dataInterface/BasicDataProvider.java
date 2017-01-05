@@ -18,6 +18,13 @@ public class BasicDataProvider implements DataProvider{
         isReady = true;
     }
 
+    public BasicDataProvider(DataProvider dataProvider) {
+        isReady = false;
+        this.dataMatrix = dataProvider.getDataMatrix();
+        this.labelMatrix = dataProvider.getLabelMatrix();
+        isReady = true;
+    }
+
     @Override
     public Matrix getDataMatrix() {
         return dataMatrix;

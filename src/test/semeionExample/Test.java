@@ -1,13 +1,16 @@
 package test.semeionExample;
 
+import basicUtils.BasicImageConvertor;
 import basicUtils.ContourExtractor;
 import basicUtils.Matrix;
 import dataInterface.BasicDataProvider;
 import dataInterface.DataProvider;
-import dataInterface.OneNumberSensitiveSemeion;
-import dataInterface.SemeionDataProvider;
+import dataInterface.semeionInterfaces.SemeionDataProvider;
 import examples.RBFKernel;
 import mlalgorithms.SupportVectorMachine;
+import dataInterface.semeionInterfaces.OneNumberSensitiveSemeion;
+
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Created by Xiangxi on 2016/12/27.
@@ -17,11 +20,11 @@ public class Test {
     public static void main(String[] args) {
         SemeionDataProvider semeionDataProvider = new OneNumberSensitiveSemeion("data\\semeion.data", new ContourExtractor(16,16),5);
 
-        Matrix fullDataMatrix = semeionDataProvider.getDataMatrix();
+        Matrix fullDataMatrix = semeionDataProvider.getFeatureMatrix();
         int total = fullDataMatrix.getHeight();
-        double sampleRate = 0.5;
+        double sampleRate = 0.3;
         int trainNumber = (int)(total * sampleRate);
-        int testNumber = trainNumber - 1;
+        int testNumber = total - trainNumber;
 
         DataProvider trainDataProvider = new BasicDataProvider(fullDataMatrix.subMatrix(0, 0,
                 fullDataMatrix.getWidth(), trainNumber), semeionDataProvider.getLabelMatrix().subMatrix(0, 0,
@@ -31,14 +34,15 @@ public class Test {
                 semeionDataProvider.getLabelMatrix().subMatrix(0, trainNumber, 1, total)
         );
 
-        SupportVectorMachine supportVectorMachine = new SupportVectorMachine(trainDataProvider, new RBFKernel(1.0/100));
+        SupportVectorMachine supportVectorMachine = new SupportVectorMachine(trainDataProvider, new RBFKernel(2.73));
         supportVectorMachine.train();
+        supportVectorMachine.saveRbfModelToFile("data\\test\\semeionSave.data");
+        SupportVectorMachine refinedModel = new SupportVectorMachine("data\\test\\semeionSave.data");
         double[][] testResult = new double[testNumber][1];
         for(int i = 0; i < testNumber; i++) {
-            testResult[i][0] = supportVectorMachine.test(testDataProvider.getDataMatrix().get(i));
+            testResult[i][0] = refinedModel.test(testDataProvider.getDataMatrix().get(i));
         }
         System.out.println("The error rate is about " + testErrorRate(new Matrix(testResult), testDataProvider.getLabelMatrix()));
-        // TODO: complete the Test on semeion.data
     }
 
     private static double testErrorRate(Matrix result, Matrix expected) {
