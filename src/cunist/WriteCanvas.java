@@ -7,16 +7,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 import java.text.DecimalFormat;
 
 /**
  * Created by ZouKaifa on 2015/11/21.
  */
 public class WriteCanvas extends Canvas{
-    private static int widthAndHeight = 16;
-    private static int canvasWidth = 250;
+    private static int widthAndHeight = Const.widthAndHeight;
+    private static int canvasWidth = Const.canvasWidth;
     private CalculateByGPU calculateByGPU;
-
+    private BasicStroke stroke;
 
     public int[] prePoints;
     public int[] nowPoints;
@@ -37,6 +38,7 @@ public class WriteCanvas extends Canvas{
         nowPoints = new int[2];
         this.dotMatrixCanvas = dotMatrixCanvas;
         this.mainGra = mainGra;
+        stroke = new BasicStroke(9f);
         setBackground(Color.lightGray);
         canvasListener = new CanvasListener(this);
         addMouseListener(canvasListener);
@@ -54,6 +56,15 @@ public class WriteCanvas extends Canvas{
             dotMatrixCanvas.clear();
         }
     }
+
+    public BasicStroke getStroke() {
+        return stroke;
+    }
+
+    public void setStroke(BasicStroke stroke) {
+        this.stroke = stroke;
+    }
+
     @Override
     public void paint(Graphics g) {
         Graphics2D graphics2D = (Graphics2D) g;
@@ -87,7 +98,7 @@ public class WriteCanvas extends Canvas{
                 Graphics2D graphics2D = (Graphics2D) image.getGraphics();
                 graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                graphics2D.setStroke(new BasicStroke(10f));
+                graphics2D.setStroke(stroke);
                 graphics2D.drawLine(canvas.prePoints[0], canvas.prePoints[1],
                         canvas.nowPoints[0], canvas.nowPoints[1]);
             }
@@ -122,7 +133,7 @@ public class WriteCanvas extends Canvas{
             }
 
             Matrix test;
-            test = TurnGraphToMatrix();
+            test = TurnGraphToMatrix(16);
 
             int max = 0;
             double[] pro = new double[10];
@@ -140,11 +151,17 @@ public class WriteCanvas extends Canvas{
         }
 
 
-        public Matrix TurnGraphToMatrix () {
-            double[][] ans = new double[16][16];
-            for (int i = 0; i < newImage.getHeight(); i++) {
-                for (int j = 0; j < newImage.getWidth(); j++) {
-                    int gr = new Color(newImage.getRGB(j, i)).getGreen();
+        public Matrix TurnGraphToMatrix (int number) {
+            BufferedImage testImage = new BufferedImage(number,number,BufferedImage.TYPE_BYTE_GRAY);
+            Graphics2D g2 = newImage.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(testImage, 0, 0, number, number, null);
+            g2.dispose();
+
+            double[][] ans = new double[number][number];
+            for (int i = 0; i < testImage.getHeight(); i++) {
+                for (int j = 0; j < testImage.getWidth(); j++) {
+                    int gr = new Color(testImage.getRGB(j, i)).getGreen();
                     if (gr != 0 ){
                         ans[j][i] = 1;
                     }

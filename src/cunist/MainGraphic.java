@@ -54,8 +54,8 @@ public class MainGraphic extends JFrame {
 
     private void setAttr() {
         rootPanel.setLayout(null);
-        writeCanvas.setBounds(5, 5, 250, 250);
-        dotMatrixCanvas.setBounds(286, 114, 140, 140);
+        writeCanvas.setBounds(50, 50, Const.canvasWidth, Const.canvasWidth);
+        dotMatrixCanvas.setBounds(286, 114, Const.dotConvaswidth, Const.dotConvaswidth);
         clearButton.setBounds(285, 30, 60, 45);
         clearButton.setFocusPainted(false);
         clearButton.setContentAreaFilled(false);
