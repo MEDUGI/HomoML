@@ -19,6 +19,7 @@ public class WriteCanvas extends Canvas{
     private static int canvasWidth = Const.canvasWidth;
     private CalculateByGPU calculateByGPU;
     private BasicStroke stroke;
+    private final static int imageWidth = 28;                   //Note: this const is of vital importance
 
     public int[] prePoints;
     public int[] nowPoints;
@@ -39,7 +40,7 @@ public class WriteCanvas extends Canvas{
         nowPoints = new int[2];
         this.dotMatrixCanvas = dotMatrixCanvas;
         this.mainGra = mainGra;
-        stroke = new BasicStroke(0xf);
+        stroke = new BasicStroke(8);
         setBackground(Color.lightGray);
         canvasListener = new CanvasListener(this);
         addMouseListener(canvasListener);
@@ -153,7 +154,7 @@ public class WriteCanvas extends Canvas{
 
 
         public Matrix TurnGraphToMatrix () {
-            double[][] ans = new double[16][16];
+            double[][] ans = new double[imageWidth][imageWidth];
             for (int i = 0; i < newImage.getHeight(); i++) {
                 for (int j = 0; j < newImage.getWidth(); j++) {
                     int gr = new Color(newImage.getRGB(j, i)).getGreen();

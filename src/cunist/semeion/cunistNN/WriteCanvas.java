@@ -37,7 +37,7 @@ public class WriteCanvas extends Canvas{
         nowPoints = new int[2];
         this.dotMatrixCanvas = dotMatrixCanvas;
         this.mainGra = mainGra;
-        stroke = new BasicStroke(0xf);
+        stroke = new BasicStroke(12);
         setBackground(Color.lightGray);
         canvasListener = new CanvasListener(this);
         addMouseListener(canvasListener);

@@ -65,8 +65,10 @@ public class MnistDataProvider extends ImageDataProvider {
             double[][] rawData = new double[dataNumber][dataLength];
 
             for(int i = 0; i < dataNumber; i++) {
-                for(int j = 0; j < dataLength; j++)
-                    rawData[i][j] = dataInputStream.readUnsignedByte();
+                for(int j = 0; j < dataLength; j++) {
+                    double bit = dataInputStream.readUnsignedByte();
+                    rawData[i][j] = bit > 128 ? 1 : 0;
+                }
             }
             dataMatrix = new Matrix(rawData);
         }

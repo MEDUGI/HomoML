@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class CNNetwork {
     private DataProvider imgs;
     private ArrayList<Layer> layers;
-    private double tol = 1e-5;
+    private double tol = 9e-8;
     private int batchSize = 100;
 
     public CNNetwork() {
@@ -32,7 +32,7 @@ public class CNNetwork {
      * 首先检查layers不为空。
      * 然后开始前向循环。
      */
-    public int train() throws Exception{
+    public int train() {
         int length = layers.size();
         int count = 0;
         Matrix output = new Matrix();
@@ -48,10 +48,10 @@ public class CNNetwork {
         int iterations = 0;
         while (true) {
             iterations++;
-            //System.out.println(iterations);
-            /*for (int j = 0;j<batchSize;j++) {
-                rank = (int) Math.floor(Math.random() * imgs.getDataMatrix().getHeight());
-                input = imgs.getDataMatrix().get(rank);
+            if (iterations % 1000 == 0)System.out.println(iterations);
+            rank = (int) Math.floor(Math.random() * imgs.getDataMatrix().getHeight());
+            input = imgs.getDataMatrix().get(rank);
+            try {
                 for (int i = 0; i < length; i++) {
                     Layer temp = layers.get(i);
                     output = temp.forwardPropagation(input);
@@ -61,24 +61,10 @@ public class CNNetwork {
                 for (int i = length - 1; i >= 0; i--) {
                     Layer temp = layers.get(i);
                     error = temp.backPropagation(error);
+                    temp.updateWeights(1);
                 }
-                for (int i = 0;i < length;i++) {
-                    Layer temp = layers.get(i);
-                    temp.updateWeights(batchSize);
-                }
-            }*/
-            rank = (int) Math.floor(Math.random() * imgs.getDataMatrix().getHeight());
-            input = imgs.getDataMatrix().get(rank);
-            for (int i = 0; i < length; i++) {
-                Layer temp = layers.get(i);
-                output = temp.forwardPropagation(input);
-                input = output;
-            }
-            error = output.sub(imgs.getLabelMatrix().get(rank));
-            for (int i = length - 1; i >= 0; i--) {
-                Layer temp = layers.get(i);
-                error = temp.backPropagation(error);
-                temp.updateWeights(1);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             if (isConvergence()) count++;
