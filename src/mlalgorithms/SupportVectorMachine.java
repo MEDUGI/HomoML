@@ -61,10 +61,14 @@ public class SupportVectorMachine {
             b = dataInputStream.readDouble();                   // bias
             double gamma = dataInputStream.readDouble();        // rbf_gamma
 
+            centralizingVector = new Matrix(1, width);
             alpha = new ArrayList<>(Collections.nCopies(count, 0.0));
             labelMatrix = new Matrix(count, 1, 1.0);
             dataMatrix = new Matrix(count, width);
             fKernel = new RBFKernel(gamma);
+
+            for(int i = 0; i < width; i++)
+                centralizingVector.set(0, i, dataInputStream.readDouble());
 
             for(int i = 0; i < count; i++) {
                 alpha.set(i, dataInputStream.readDouble());
@@ -84,7 +88,17 @@ public class SupportVectorMachine {
     public void train() {
         if (!data.isReady()) {
             System.err.println("Not Enough Data");
-            return ;
+            return;
+        }
+        centralizingVector = new Matrix(1, dataMatrix.getWidth(), 0.0);
+        for(int i = 0; i < dataMatrix.getWidth(); i++) {
+            for(int j = 0; j < dataMatrix.getHeight(); j++)
+                centralizingVector.set(0, i, centralizingVector.get(0, i) + dataMatrix.get(j, i));
+        }
+        centralizingVector = centralizingVector.multiply(1.0 / dataMatrix.getHeight());
+        for(int i = 0; i < dataMatrix.getHeight(); i++) {
+            for(int j = 0; j < dataMatrix.getWidth(); j++)
+                dataMatrix.set(i, j, dataMatrix.get(i, j) - centralizingVector.get(0, j));
         }
         SMO();
         System.out.println("Train Has Finished!");
@@ -199,7 +213,7 @@ public class SupportVectorMachine {
 
         //初始化b的值，可以考虑随机或者置默认值
         //Todo 后续优化b参数取值
-        b = 1;
+        b = 0;
 
         //求Kernel矩阵
         GetKernelMatrix();
@@ -262,9 +276,10 @@ public class SupportVectorMachine {
 
     public double test(Matrix x) {
         // 在这里我发现，实际上还是要保留支持向量，因为测试的时候不可能单靠内积来进行计算。
+        Matrix result = x.sub(centralizingVector);
         double f = 0.0;
         for (int i=0;i<alpha.size();i++) {
-            f = f + alpha.get(i)*labelMatrix.get(i,0)*fKernel.cal(dataMatrix.get(i),x);
+            f = f + alpha.get(i)*labelMatrix.get(i,0)*fKernel.cal(dataMatrix.get(i),result);
         }
         f += b;
         return f;
@@ -281,6 +296,7 @@ public class SupportVectorMachine {
      * int width : length of each data
      * double b : the bias of model
      * double rbf_gamma : the gamma parameter of rbf kernel
+     * double[width]: the centralizing row vector.
      * double[count] alpha: the alpha vector multiplies by the label vector
      * double[count][width] data : the data matrix
      */
@@ -302,6 +318,9 @@ public class SupportVectorMachine {
             dataOutputStream.writeInt(dataMatrix.getWidth());   // width of data
             dataOutputStream.writeDouble(b);                    // bias
             dataOutputStream.writeDouble(fKernel.getGamma());   // rbf_gamma
+
+            for(int i = 0; i < dataMatrix.getWidth(); i++)
+                dataOutputStream.writeDouble(centralizingVector.get(0, i));
 
             int countTemp = 0;
             for(int i = 0; i < alpha.size(); i++) {

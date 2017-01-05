@@ -21,6 +21,7 @@ public class CalculateByGPU {
     ArrayList<SupportVectorMachine> svms;
     FeatureExtractor featureExtractor;
     BasicImageConvertor basicImageConvertor;
+    private double sumTemp=-1.0;
 
 
     public CalculateByGPU() {
@@ -40,6 +41,11 @@ public class CalculateByGPU {
 
     public int get(Matrix matrix, double[] pros){
         Matrix feature = featureExtractor.dataToFeature(basicImageConvertor.toRowMatrix(matrix));
+        if (sumTemp < 0)
+            sumTemp = feature.getSum();
+        else
+            if (Math.abs(sumTemp - feature.getSum()) > 0.5)
+                System.out.println("Not Equal!");
         double top = -1;
         for (int i = 0; i<= 9;i++) {
             pros[i] = svms.get(i).test(feature);
