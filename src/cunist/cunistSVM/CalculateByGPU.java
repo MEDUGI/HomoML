@@ -31,16 +31,24 @@ public class CalculateByGPU {
     public int get(Matrix matrix, double[] pros){
         Matrix feature = featureExtractor.dataToFeature(basicImageConvertor.toRowMatrix(matrix));
         double top = -1;
+        double sum = 0;
         for (int i = 0; i<= 9;i++) {
+            //pros[i] = svms.get(i).test(feature)/svms.get(i).getReferencePoint();
             pros[i] = svms.get(i).test(feature);
             if (pros[i] < 0) {
                 pros[i] = 0;
                 System.out.println("Minus!");
                 continue;
             }
+            //sum += pros[i];
             if (pros[i] > top)
                 top = pros[i];
         }
+        /*if (sum != 0) {
+            for (int i = 0;i <= 9;i++) {
+                pros[i] /= sum;
+            }
+        }*/
 
         if (top > 0) {
             for(int i = 0; i <= 9; i++)

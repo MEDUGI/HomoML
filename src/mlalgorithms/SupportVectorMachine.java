@@ -24,6 +24,7 @@ public class SupportVectorMachine {
     private double C=1.0f;
     private double eps = 1e-3;
     private double tol = 1e-1; // 判断收敛的边界,重要参数
+    private double referencePoint = 0.0;
     private boolean isInit=false;
     private final int maxPasses = 5;
 
@@ -60,6 +61,10 @@ public class SupportVectorMachine {
             int width = dataInputStream.readInt();              // width of data
             b = dataInputStream.readDouble();                   // bias
             double gamma = dataInputStream.readDouble();        // rbf_gamma
+            referencePoint = dataInputStream.readDouble();      // referencePoint
+            System.out.print(filepath);
+            System.out.print(": recover referencePoint ->");
+            System.out.println(referencePoint);
 
             centralizingVector = new Matrix(1, width);
             alpha = new ArrayList<>(Collections.nCopies(count, 0.0));
@@ -101,6 +106,17 @@ public class SupportVectorMachine {
                 dataMatrix.set(i, j, dataMatrix.get(i, j) - centralizingVector.get(0, j));
         }
         SMO();
+        // 下一步将所有正例提取出来，然后计算其输出的均值，作为参考量。
+        referencePoint = 0.0;
+        int counter = 0;
+        for (int i = 0;i < dataMatrix.getHeight();i++) {
+            if (labelMatrix.get(i,0) == 1) {
+                counter++;
+                double result = test(dataMatrix.get(i));
+                referencePoint += result;
+            }
+        }
+        referencePoint /= counter;
     }
 
     private double calE(int i) {
@@ -295,6 +311,7 @@ public class SupportVectorMachine {
      * int width : length of each data
      * double b : the bias of model
      * double rbf_gamma : the gamma parameter of rbf kernel
+     * double referencePoint : the mean of all positive example's result.
      * double[width]: the centralizing row vector.
      * double[count] alpha: the alpha vector multiplies by the label vector
      * double[count][width] data : the data matrix
@@ -317,6 +334,10 @@ public class SupportVectorMachine {
             dataOutputStream.writeInt(dataMatrix.getWidth());   // width of data
             dataOutputStream.writeDouble(b);                    // bias
             dataOutputStream.writeDouble(fKernel.getGamma());   // rbf_gamma
+            dataOutputStream.writeDouble(referencePoint);       // referencePoint
+            System.out.print(filepath);
+            System.out.print(": save referencePoint ->");
+            System.out.println(referencePoint);
 
             for(int i = 0; i < dataMatrix.getWidth(); i++)
                 dataOutputStream.writeDouble(centralizingVector.get(0, i));
@@ -360,5 +381,9 @@ public class SupportVectorMachine {
 
     public double getB() {
         return b;
+    }
+
+    public double getReferencePoint() {
+        return referencePoint;
     }
 }
