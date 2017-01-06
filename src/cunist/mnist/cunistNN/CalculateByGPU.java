@@ -1,4 +1,4 @@
-package cunist.cunistNN;
+package cunist.mnist.cunistNN;
 
 import basicUtils.BasicImageConvertor;
 import basicUtils.featureExtractor.ContourExtractor;

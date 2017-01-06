@@ -3,6 +3,7 @@ package test.semeionExample;
 import basicUtils.featureExtractor.ContourExtractor;
 import basicUtils.featureExtractor.FeatureExtractor;
 import basicUtils.Matrix;
+import basicUtils.featureExtractor.IdenticalExtractor;
 import dataInterface.BasicDataProvider;
 import dataInterface.DataProvider;
 import dataInterface.semeionInterfaces.MulticolumnDigitDataProvider;
@@ -17,7 +18,7 @@ import mlalgorithms.FullConnectionLayer;
  */
 public class TestNN {
     public static void main(String[] args) throws Exception{
-        FeatureExtractor featureExtractor = new ContourExtractor(16,16);
+        FeatureExtractor featureExtractor = new IdenticalExtractor();
         SemeionDataProvider semeionDataProvider = new SemeionDataProvider("data\\semeion.data", featureExtractor);
         BasicDataProvider basicDataProvider = new BasicDataProvider(semeionDataProvider.getFeatureMatrix(), semeionDataProvider.getLabelMatrix());
         MulticolumnDigitDataProvider multicolumnDigitDataProvider = new MulticolumnDigitDataProvider(basicDataProvider);
@@ -37,7 +38,7 @@ public class TestNN {
         );
 
         CNNetwork NN = new CNNetwork();
-        NN.insertLayer(new FullConnectionLayer(64,128, new ReLUActivationFunction()));
+        NN.insertLayer(new FullConnectionLayer(256,128, new ReLUActivationFunction()));
         NN.insertLayer(new FullConnectionLayer(128,64, new ReLUActivationFunction()));
         NN.insertLayer(new FullConnectionLayer(64,10,new SigmoidActivationFunction()));
         NN.setImgs(trainDataProvider);
