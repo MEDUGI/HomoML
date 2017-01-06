@@ -1,7 +1,6 @@
 package cunist.mnist.cunistNN;
 
 import basicUtils.Matrix;
-import cunist.cunistNN.*;
 import cunist.mnist.cunistNN.Const;
 
 import java.awt.*;
@@ -153,7 +152,7 @@ public class WriteCanvas extends Canvas{
 
 
         public Matrix TurnGraphToMatrix () {
-            double[][] ans = new double[16][16];
+            double[][] ans = new double[Const.widthAndHeight][Const.widthAndHeight];
             for (int i = 0; i < newImage.getHeight(); i++) {
                 for (int j = 0; j < newImage.getWidth(); j++) {
                     int gr = new Color(newImage.getRGB(j, i)).getGreen();

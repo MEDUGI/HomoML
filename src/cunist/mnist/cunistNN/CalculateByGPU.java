@@ -21,19 +21,19 @@ public class CalculateByGPU {
     CNNetwork NN;
     FeatureExtractor featureExtractor = new IdenticalExtractor();
     public CalculateByGPU(){
-        SemeionDataProvider semeionDataProvider = new SemeionDataProvider("data\\semeion.data", featureExtractor);
-        BasicDataProvider basicDataProvider = new BasicDataProvider(semeionDataProvider.getFeatureMatrix(), semeionDataProvider.getLabelMatrix());
-        MulticolumnDigitDataProvider multicolumnDigitDataProvider = new MulticolumnDigitDataProvider(basicDataProvider);
-        NN = new CNNetwork();
-        NN.insertLayer(new FullConnectionLayer(256,128, new ReLUActivationFunction()));
-        NN.insertLayer(new FullConnectionLayer(128,64, new ReLUActivationFunction()));
-        NN.insertLayer(new FullConnectionLayer(64,10,new SigmoidActivationFunction()));
-        NN.setImgs(multicolumnDigitDataProvider);
-        try {
-            NN.train();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    //    SemeionDataProvider semeionDataProvider = new SemeionDataProvider("data\\semeion.data", featureExtractor);
+     //   BasicDataProvider basicDataProvider = new BasicDataProvider(semeionDataProvider.getFeatureMatrix(), semeionDataProvider.getLabelMatrix());
+      //  MulticolumnDigitDataProvider multicolumnDigitDataProvider = new MulticolumnDigitDataProvider(basicDataProvider);
+       // NN = new CNNetwork();
+       // NN.insertLayer(new FullConnectionLayer(256,128, new ReLUActivationFunction()));
+       // NN.insertLayer(new FullConnectionLayer(128,64, new ReLUActivationFunction()));
+       // NN.insertLayer(new FullConnectionLayer(64,10,new SigmoidActivationFunction()));
+       // NN.setImgs(multicolumnDigitDataProvider);
+       // try {
+       //     NN.train();
+       // } catch (Exception e) {
+       //     e.printStackTrace();
+    //    }
     }
 
     public int get(byte[] b, double[] pros){
@@ -43,11 +43,11 @@ public class CalculateByGPU {
     }
 
     public int get(Matrix matrix, double[] pros){
-        BasicImageConvertor basicImageConvertor = new BasicImageConvertor(16,16);
-        Matrix feature = featureExtractor.dataToFeature(basicImageConvertor.toRowMatrix(matrix));
-        for (int i = 0; i<= 9;i++) {
-            pros[i] = NN.test(feature).get(0,i);
-        }
+     //   BasicImageConvertor basicImageConvertor = new BasicImageConvertor(16,16);
+      //  Matrix feature = featureExtractor.dataToFeature(basicImageConvertor.toRowMatrix(matrix));
+      //  for (int i = 0; i<= 9;i++) {
+        //    pros[i] = NN.test(feature).get(0,i);
+        //}
         return 1;
     }
 }
