@@ -1,4 +1,4 @@
-package cunist.cunistSVM;
+package cunist.semeion.cunistSVM;
 
 import basicUtils.Matrix;
 

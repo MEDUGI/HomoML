@@ -1,4 +1,4 @@
-package cunist.cunistNN;
+package cunist.semeion.cunistSVM;
 
 /**
  * Created by forandroid on 17-1-5.

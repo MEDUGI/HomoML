@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cunist.cunistNN;
+package cunist.semeion.cunistNN;
 
 /**
  * @author ZouKaifa
@@ -14,7 +14,7 @@ public class CuNIST {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new cunist.cunistNN.MainGraphic();
+        new MainGraphic();
     }
 
 }

@@ -1,4 +1,4 @@
-package cunist.cunistNN;
+package cunist.semeion.cunistSVM;
 
 import java.awt.*;
 
