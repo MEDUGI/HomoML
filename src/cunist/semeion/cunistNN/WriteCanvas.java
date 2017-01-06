@@ -1,4 +1,4 @@
-package cunist.cunistNN;
+package cunist.semeion.cunistNN;
 
 import basicUtils.Matrix;
 
@@ -13,7 +13,7 @@ import java.text.DecimalFormat;
  * Created by ZouKaifa on 2015/11/21.
  */
 public class WriteCanvas extends Canvas{
-    private static int widthAndHeight = cunist.cunistNN.Const.widthAndHeight;
+    private static int widthAndHeight = Const.widthAndHeight;
     private static int canvasWidth = Const.canvasWidth;
     private CalculateByGPU calculateByGPU;
     private BasicStroke stroke;

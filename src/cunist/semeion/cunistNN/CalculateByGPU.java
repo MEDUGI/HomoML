@@ -1,7 +1,6 @@
-package cunist.cunistNN;
+package cunist.semeion.cunistNN;
 
 import basicUtils.BasicImageConvertor;
-import basicUtils.featureExtractor.ContourExtractor;
 import basicUtils.featureExtractor.FeatureExtractor;
 import basicUtils.Matrix;
 import basicUtils.featureExtractor.IdenticalExtractor;

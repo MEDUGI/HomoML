@@ -1,4 +1,4 @@
-package cunist.cunistNN;
+package cunist.semeion.cunistNN;
 
 import javax.swing.*;
 import java.awt.*;
