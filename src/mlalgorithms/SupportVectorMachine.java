@@ -62,9 +62,6 @@ public class SupportVectorMachine {
             b = dataInputStream.readDouble();                   // bias
             double gamma = dataInputStream.readDouble();        // rbf_gamma
             referencePoint = dataInputStream.readDouble();      // referencePoint
-            System.out.print(filepath);
-            System.out.print(": recover referencePoint ->");
-            System.out.println(referencePoint);
 
             centralizingVector = new Matrix(1, width);
             alpha = new ArrayList<>(Collections.nCopies(count, 0.0));
@@ -335,9 +332,6 @@ public class SupportVectorMachine {
             dataOutputStream.writeDouble(b);                    // bias
             dataOutputStream.writeDouble(fKernel.getGamma());   // rbf_gamma
             dataOutputStream.writeDouble(referencePoint);       // referencePoint
-            System.out.print(filepath);
-            System.out.print(": save referencePoint ->");
-            System.out.println(referencePoint);
 
             for(int i = 0; i < dataMatrix.getWidth(); i++)
                 dataOutputStream.writeDouble(centralizingVector.get(0, i));

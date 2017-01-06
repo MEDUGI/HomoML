@@ -1,7 +1,7 @@
 package cunist.mnist.cunistNN;
 
 import basicUtils.Matrix;
-import cunist.cunistNN.*;
+import cunist.mnist.cunistNN.*;
 import cunist.mnist.cunistNN.Const;
 
 import java.awt.*;
