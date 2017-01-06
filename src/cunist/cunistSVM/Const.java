@@ -1,4 +1,4 @@
-package cunist;
+package cunist.cunistSVM;
 
 /**
  * Created by forandroid on 17-1-5.

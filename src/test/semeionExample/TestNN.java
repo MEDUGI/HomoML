@@ -1,6 +1,7 @@
 package test.semeionExample;
 
-import basicUtils.ContourExtractor;
+import basicUtils.featureExtractor.ContourExtractor;
+import basicUtils.featureExtractor.FeatureExtractor;
 import basicUtils.Matrix;
 import dataInterface.BasicDataProvider;
 import dataInterface.DataProvider;
@@ -16,7 +17,8 @@ import mlalgorithms.FullConnectionLayer;
  */
 public class TestNN {
     public static void main(String[] args) throws Exception{
-        SemeionDataProvider semeionDataProvider = new SemeionDataProvider("data\\semeion.data", new ContourExtractor(16,16));
+        FeatureExtractor featureExtractor = new ContourExtractor(16,16);
+        SemeionDataProvider semeionDataProvider = new SemeionDataProvider("data\\semeion.data", featureExtractor);
         BasicDataProvider basicDataProvider = new BasicDataProvider(semeionDataProvider.getFeatureMatrix(), semeionDataProvider.getLabelMatrix());
         MulticolumnDigitDataProvider multicolumnDigitDataProvider = new MulticolumnDigitDataProvider(basicDataProvider);
 

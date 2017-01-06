@@ -88,13 +88,17 @@ public class CNNetwork {
         return 0;
     }
 
-    public Matrix test(Matrix input) throws Exception{
+    public Matrix test(Matrix input) {
         int length = layers.size();
         Matrix mTemp = input.copy();
         Matrix output = new Matrix();
         for (int i = 0;i<length;i++) {
             Layer temp = layers.get(i);
-            output = temp.forwardPropagation(mTemp);
+            try {
+                output = temp.forwardPropagation(mTemp);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             mTemp = output;
         }
         return output.copy();

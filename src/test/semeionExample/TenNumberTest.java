@@ -1,7 +1,7 @@
 package test.semeionExample;
 
 import basicUtils.BasicImageConvertor;
-import basicUtils.ContourExtractor;
+import basicUtils.featureExtractor.ContourExtractor;
 import dataInterface.BasicDataProvider;
 import dataInterface.semeionInterfaces.OneNumberSensitiveSemeion;
 import dataInterface.semeionInterfaces.SemeionDataProvider;

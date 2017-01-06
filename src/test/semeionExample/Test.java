@@ -1,7 +1,6 @@
 package test.semeionExample;
 
-import basicUtils.BasicImageConvertor;
-import basicUtils.ContourExtractor;
+import basicUtils.featureExtractor.ContourExtractor;
 import basicUtils.Matrix;
 import dataInterface.BasicDataProvider;
 import dataInterface.DataProvider;
@@ -9,8 +8,6 @@ import dataInterface.semeionInterfaces.SemeionDataProvider;
 import examples.RBFKernel;
 import mlalgorithms.SupportVectorMachine;
 import dataInterface.semeionInterfaces.OneNumberSensitiveSemeion;
-
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * Created by Xiangxi on 2016/12/27.

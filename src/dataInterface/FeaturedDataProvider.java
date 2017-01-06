@@ -1,6 +1,6 @@
 package dataInterface;
 
-import basicUtils.FeatureExtractor;
+import basicUtils.featureExtractor.FeatureExtractor;
 import basicUtils.Matrix;
 
 /**
