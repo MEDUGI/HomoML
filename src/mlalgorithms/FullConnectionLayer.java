@@ -1,5 +1,6 @@
 package mlalgorithms;
 
+import basicUtils.ConcurenceRunner.*;
 import basicUtils.Matrix;
 
 /**
@@ -51,7 +52,21 @@ public class FullConnectionLayer implements Layer{
             e.printStackTrace();
             throw e;
         }
-        for (int i = 0;i<outputNum;i++) {
+        new TaskManager(outputNum) {
+            @Override
+            public void process(int start, int end) {
+                for (int i = start;i<end;i++) {
+                    double temp = 0;
+                    for (int j = 0;j < inputNum;j++) {
+                        temp += input.get(0,j)*weights.get(j,i);
+                    }
+                    temp+=bias.get(0,i);
+                    output.set(0,i,temp);
+                    result.set(0,i,acFunc.cal(temp));
+                }
+            }
+        }.start();
+        /*for (int i = 0;i<outputNum;i++) {
             double temp = 0;
             for (int j = 0;j < inputNum;j++) {
                 temp += input.get(0,j)*weights.get(j,i);
@@ -59,20 +74,46 @@ public class FullConnectionLayer implements Layer{
             temp+=bias.get(0,i);
             output.set(0,i,temp);
             result.set(0,i,acFunc.cal(temp));
-        }
+        }*/
         return result;
     }
     public Matrix backPropagation(Matrix err) throws Exception{
         Matrix errors = new Matrix(1, inputNum);
         Matrix thetas = new Matrix(1, outputNum);
         convergency = 0.0;
-        for (int i = 0;i < outputNum;i++) {
+        new TaskManager(outputNum) {
+            @Override
+            public void process(int start, int end) {
+                for (int i = start;i < end;i++) {
+                    thetas.set(0,i,acFunc.derivation(output.get(0,i))*err.get(0,i));
+                    biasGradient.set(0,i,biasGradient.get(0,i)+Math.pow(thetas.get(0,i),2));
+                    double deltabTMP = deltab.get(0,i) + calEta(biasGradient.get(0,i))*thetas.get(0,i);
+                    deltab.set(0,i,deltabTMP);
+                }
+            }
+        }.start();
+        /*for (int i = 0;i < outputNum;i++) {
             thetas.set(0,i,acFunc.derivation(output.get(0,i))*err.get(0,i));
             biasGradient.set(0,i,biasGradient.get(0,i)+Math.pow(thetas.get(0,i),2));
             double deltabTMP = deltab.get(0,i) + calEta(biasGradient.get(0,i))*thetas.get(0,i);
             deltab.set(0,i,deltabTMP);
-        }
-        for (int i = 0;i < inputNum;i++) {
+        }*/
+        new TaskManager(inputNum) {
+            @Override
+            public void process(int start, int end) {
+                for (int i = start;i < end;i++) {
+                    double temp = 0.0;
+                    for (int j = 0;j < outputNum;j++) {
+                        temp += thetas.get(0,j) * weights.get(i,j);
+                        gradient.set(i, j, gradient.get(i, j) + Math.pow(input.get(0,i)*thetas.get(0,j),2));
+                        double deltaWTMP = deltaW.get(i,j) + calEta(gradient.get(i,j))*thetas.get(0,j)*input.get(0,i);
+                        deltaW.set(i,j,deltaWTMP);
+                    }
+                    errors.set(0,i,temp);
+                }
+            }
+        }.start();
+        /*for (int i = 0;i < inputNum;i++) {
             double temp = 0.0;
             for (int j = 0;j < outputNum;j++) {
                 temp += thetas.get(0,j) * weights.get(i,j);
@@ -81,7 +122,7 @@ public class FullConnectionLayer implements Layer{
                 deltaW.set(i,j,deltaWTMP);
             }
             errors.set(0,i,temp);
-        }
+        }*/
         return errors;
     }
 

@@ -38,11 +38,14 @@ public class TestNN {
         );
 
         CNNetwork NN = new CNNetwork();
-        NN.insertLayer(new FullConnectionLayer(256,128, new ReLUActivationFunction()));
-        NN.insertLayer(new FullConnectionLayer(128,64, new ReLUActivationFunction()));
-        NN.insertLayer(new FullConnectionLayer(64,10,new SigmoidActivationFunction()));
+        NN.insertLayer(new FullConnectionLayer(256,512, new ReLUActivationFunction()));
+        NN.insertLayer(new FullConnectionLayer(512,256, new ReLUActivationFunction()));
+        NN.insertLayer(new FullConnectionLayer(256,10,new SigmoidActivationFunction()));
         NN.setImgs(trainDataProvider);
+        long startTime = System.currentTimeMillis();
         NN.train();
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime-startTime);
 
         double[][] testResult = new double[testNumber][1];
         for(int i = 0; i < testNumber; i++) {
