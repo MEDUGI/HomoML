@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class CNNetwork {
     private DataProvider imgs;
     private ArrayList<Layer> layers;
-    private double tol = 1e-8;
+    private double tol = 1e-5;
     private int batchSize = 100;
 
     public CNNetwork() {
@@ -34,18 +34,22 @@ public class CNNetwork {
      */
     public int train() throws Exception{
         int length = layers.size();
+        int count = 0;
         Matrix output = new Matrix();
         Matrix input;
         Matrix error;
-        boolean isContinued = true;
+        //boolean isContinued = true;
         int rank = 0;
 
         if (layers.size() == 0) {
             System.err.println("CNNetwork.java : layers为空，无法训练。");
             return -1;
         }
-        while (isContinued) {
-            for (int j = 0;j<batchSize;j++) {
+        int iterations = 0;
+        while (true) {
+            iterations++;
+            System.out.println(iterations);
+            /*for (int j = 0;j<batchSize;j++) {
                 rank = (int) Math.floor(Math.random() * imgs.getDataMatrix().getHeight());
                 input = imgs.getDataMatrix().get(rank);
                 for (int i = 0; i < length; i++) {
@@ -58,30 +62,47 @@ public class CNNetwork {
                     Layer temp = layers.get(i);
                     error = temp.backPropagation(error);
                 }
-            }
-            for (int i = 0;i < length;i++) {
+                for (int i = 0;i < length;i++) {
+                    Layer temp = layers.get(i);
+                    temp.updateWeights(batchSize);
+                }
+            }*/
+            rank = (int) Math.floor(Math.random() * imgs.getDataMatrix().getHeight());
+            input = imgs.getDataMatrix().get(rank);
+            for (int i = 0; i < length; i++) {
                 Layer temp = layers.get(i);
-                temp.updateWeights(batchSize);
+                output = temp.forwardPropagation(input);
+                input = output;
             }
-            isContinued = !isConvergence();
+            error = output.sub(imgs.getLabelMatrix().get(rank));
+            for (int i = length - 1; i >= 0; i--) {
+                Layer temp = layers.get(i);
+                error = temp.backPropagation(error);
+                temp.updateWeights(1);
+            }
+
+            if (isConvergence()) count++;
+            else count = 0;
+            if (count == 1) break;
         }
         return 0;
     }
 
     public Matrix test(Matrix input) throws Exception{
         int length = layers.size();
+        Matrix mTemp = input.copy();
         Matrix output = new Matrix();
         for (int i = 0;i<length;i++) {
             Layer temp = layers.get(i);
-            output = temp.forwardPropagation(input);
-            input = output;
+            output = temp.forwardPropagation(mTemp);
+            mTemp = output;
         }
         return output.copy();
     }
 
     private boolean isConvergence() {
         for (int i = 0; i < layers.size();i++) {
-            if (layers.get(i).isConvergence() > tol) {
+            if (Math.abs(layers.get(i).isConvergence()) > tol) {
                 return false;
             }
         }

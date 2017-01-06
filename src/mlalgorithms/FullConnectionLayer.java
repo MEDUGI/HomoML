@@ -8,7 +8,9 @@ import basicUtils.Matrix;
 public class FullConnectionLayer implements Layer{
     int inputNum;
     int outputNum;
-    double eta = 0.00001;
+    double eta = 0.01;
+    Matrix gradient;
+    Matrix biasGradient;
     ActivationFunction acFunc;
     Matrix weights;
     Matrix bias;
@@ -33,6 +35,8 @@ public class FullConnectionLayer implements Layer{
         }
         bias = new Matrix(1,outputNum,0.0);
         output = new Matrix(1, outputNum,0.0);
+        gradient = new Matrix(inputNum,outputNum,0.0);
+        biasGradient = new Matrix(1,outputNum,0.0);
     }
 
     public double isConvergence() {
@@ -41,7 +45,7 @@ public class FullConnectionLayer implements Layer{
 
     public Matrix forwardPropagation(Matrix input) throws Exception{
         this.input = input.copy();
-        output = new Matrix(1,outputNum);
+        Matrix result = new Matrix(1,outputNum);
         if (input.getWidth() != inputNum) {
             Exception e = new Exception("全连接层输入参数不匹配！");
             e.printStackTrace();
@@ -51,11 +55,12 @@ public class FullConnectionLayer implements Layer{
             double temp = 0;
             for (int j = 0;j < inputNum;j++) {
                 temp += input.get(0,j)*weights.get(j,i);
-                temp += bias.get(0,i);
             }
-            output.set(0,i,acFunc.cal(temp));
+            temp+=bias.get(0,i);
+            output.set(0,i,temp);
+            result.set(0,i,acFunc.cal(temp));
         }
-        return output;
+        return result;
     }
     public Matrix backPropagation(Matrix err) throws Exception{
         Matrix errors = new Matrix(1, inputNum);
@@ -63,14 +68,16 @@ public class FullConnectionLayer implements Layer{
         convergency = 0.0;
         for (int i = 0;i < outputNum;i++) {
             thetas.set(0,i,acFunc.derivation(output.get(0,i))*err.get(0,i));
-            double deltabTMP = deltab.get(0,i) + thetas.get(0,i);
+            biasGradient.set(0,i,biasGradient.get(0,i)+Math.pow(thetas.get(0,i),2));
+            double deltabTMP = deltab.get(0,i) + calEta(biasGradient.get(0,i))*thetas.get(0,i);
             deltab.set(0,i,deltabTMP);
         }
         for (int i = 0;i < inputNum;i++) {
             double temp = 0.0;
             for (int j = 0;j < outputNum;j++) {
                 temp += thetas.get(0,j) * weights.get(i,j);
-                double deltaWTMP = deltaW.get(i,j) + deltab.get(0,j)*input.get(0,i);
+                gradient.set(i, j, gradient.get(i, j) + Math.pow(input.get(0,i)*thetas.get(0,j),2));
+                double deltaWTMP = deltaW.get(i,j) + calEta(gradient.get(i,j))*thetas.get(0,j)*input.get(0,i);
                 deltaW.set(i,j,deltaWTMP);
             }
             errors.set(0,i,temp);
@@ -78,12 +85,12 @@ public class FullConnectionLayer implements Layer{
         return errors;
     }
 
-    public void updateWeights(int batchSzie){
+    public void updateWeights(int batchSize){
         convergency = 0;
         for (int i = 0;i<outputNum;i++) {
-            bias.set(0,i,bias.get(0,i)+deltab.get(0,i)/batchSzie);
+            bias.set(0,i,bias.get(0,i)-deltab.get(0,i)/batchSize);
             for (int j = 0;j<inputNum;j++) {
-                weights.set(j,i,weights.get(j,i)+deltaW.get(j,i)/batchSzie);
+                weights.set(j,i,weights.get(j,i)-deltaW.get(j,i)/batchSize);
                 convergency += deltaW.get(j,i);
             }
         }
@@ -91,9 +98,10 @@ public class FullConnectionLayer implements Layer{
         deltaW = new Matrix(inputNum,outputNum,0.0);
     }
 
-    public void changeEta(int param) {
-        eta = param;  // param as new eta
-        // eta = 1.0/param; param as k iterations.
+    public double calEta(double gradientSum) {
+        double temp = Math.sqrt(gradientSum+0.001);
+        double see = eta/temp;
+        return see;
     }
 
     public Matrix getWeights() {

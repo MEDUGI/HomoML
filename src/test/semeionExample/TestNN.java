@@ -36,7 +36,8 @@ public class TestNN {
 
         CNNetwork NN = new CNNetwork();
         NN.insertLayer(new FullConnectionLayer(64,128, new ReLUActivationFunction()));
-        NN.insertLayer(new FullConnectionLayer(128,10,new SigmoidActivationFunction()));
+        NN.insertLayer(new FullConnectionLayer(128,64, new ReLUActivationFunction()));
+        NN.insertLayer(new FullConnectionLayer(64,10,new SigmoidActivationFunction()));
         NN.setImgs(trainDataProvider);
         NN.train();
 
@@ -63,7 +64,7 @@ public class TestNN {
         double sum = 0;
         int length = result.getHeight();
         for(int i = 0; i < length; i++) {
-            if (expected.get(i, (int)Math.round(result.get(i,0))) < 0.5)
+            if (expected.get(i, (int) Math.round(result.get(i, 0))) < 0.5)
                 sum += 1;
         }
         return sum / length;
