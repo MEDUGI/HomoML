@@ -15,11 +15,12 @@ import dataInterface.semeionInterfaces.OneNumberSensitiveSemeion;
  */
 public class Test {
     public static void main(String[] args) {
-        for(int i = 0; i < 20; i++) {
+        /*for(int i = 0; i < 20; i++) {
             double gamma = 2.0 + i * 0.07;
             System.out.print(gamma + ": ");
-            testOnOneDigit(9, gamma);
-        }
+            testOnOneDigit(5, gamma);
+        }*/
+        testOnOneDigit(5,2.73);
     }
 
     private static void testThroughtTen() {

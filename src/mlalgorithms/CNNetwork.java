@@ -48,7 +48,7 @@ public class CNNetwork {
         int iterations = 0;
         while (true) {
             iterations++;
-            System.out.println(iterations);
+            //System.out.println(iterations);
             /*for (int j = 0;j<batchSize;j++) {
                 rank = (int) Math.floor(Math.random() * imgs.getDataMatrix().getHeight());
                 input = imgs.getDataMatrix().get(rank);
